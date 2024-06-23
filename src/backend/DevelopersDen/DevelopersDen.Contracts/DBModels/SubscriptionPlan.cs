@@ -6,5 +6,6 @@
         public String Name { get; set; }
         public Int32 AllowedSubAccounts { get; set; }
         public Double PricePerMonth { get; set; } 
+        public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }

@@ -11,14 +11,12 @@ namespace DevelopersDen.Contracts.DBModels.Job
     public class JobApplication
     {
         [Key]
-        public Int64 JobApplicationId { get; set; }
+        public Guid JobApplicationId { get; set; }
         public string Comments { get; set; }
         public Int32 ApplicationStatusId { get; set; }
-        public Int64 JobId { get; set; }
-        public Int64 JobSeekerId { get; set; }
-
-        public ApplicationStatus ApplicationStatus { get; set; }
-        public Job Job { get; set; }
-        public JobSeeker.JobSeeker JobSeeker { get; set; }    
+        public Guid JobId { get; set; }
+        public Guid JobSeekerId { get; set; }
+        public Job Job { get; set; } = null!;
+        public JobSeeker.JobSeeker JobSeeker { get; set; } = null!; 
     }
 }

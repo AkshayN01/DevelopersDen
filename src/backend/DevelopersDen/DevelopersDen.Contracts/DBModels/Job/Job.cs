@@ -1,17 +1,12 @@
 ﻿using DevelopersDen.Contracts.DBModels.Recruiter;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevelopersDen.Contracts.DBModels.Job
 {
     public class Job : AuditableEntity
     {
         [Key]
-        public Int64 JobId { get; set; }
+        public Guid JobId { get; set; }
         [Required]
         public string JobTitle { get; set; }
         [Required]
@@ -24,7 +19,8 @@ namespace DevelopersDen.Contracts.DBModels.Job
         [Required]
         public string City { get; set; }
         public DateTime PostedDate { get; set; }
-        public Int64 RecruiterAccountId { get; set; }
-        public RecruiterAccount RecruiterAccount { get; set; }
+        public Guid RecruiterAccountId { get; set; }
+        public RecruiterAccount RecruiterAccount { get; set; } = null!;
+        public ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
     }
 }

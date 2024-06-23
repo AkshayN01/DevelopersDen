@@ -8,7 +8,6 @@ namespace DevelopersDen.Contracts.DBModels
         public EmailNoti Noti { get; set; }
         public Int32 IsSent { get; set; }
         public Int32 StakeholderId { get; set; }
-        public Stakeholder Stakeholder { get; set; }
     }
     public class EmailNoti
     {

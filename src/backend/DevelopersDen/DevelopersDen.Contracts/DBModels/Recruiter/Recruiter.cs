@@ -5,8 +5,7 @@ namespace DevelopersDen.Contracts.DBModels.Recruiter
     public class Recruiter : AuditableEntity
     {
         [Key]
-        public Int64 RecruiterId { get; set; }
-        public Guid RecruiterGuid { get; set; }
+        public Guid RecruiterId { get; set; }
         [Required(ErrorMessage = "Company name is required")]
         public string CompanyName { get; set; }
         [Required(ErrorMessage = "Company description is required")]
@@ -19,7 +18,8 @@ namespace DevelopersDen.Contracts.DBModels.Recruiter
         public string EmailId { get; set; }
         [Required(ErrorMessage = "Company website url is required")]
         public string WebsiteUrl { get; set; }
+        public ICollection<RecruiterAccount> RecruiterAccounts { get; } = new List<RecruiterAccount>();
         public Int32 StakeholderId { get; set; }
-        public Stakeholder Stakeholder { get; set; }
+        public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }

@@ -5,10 +5,12 @@ namespace DevelopersDen.Contracts.DBModels.JobSeeker
     public class JobSeekerProfile
     {
         [Key]
-        public long JobSeekerProfileId { get; set; }
+        public Guid JobSeekerProfileId { get; set; }
         public List<WorkExperience> WorkExperience { get; set; } = new List<WorkExperience>();
         public List<string> KeySkills { get; set; } = new List<string>();
         public SearchFilter SearchFilter { get; set; } = new SearchFilter();
+        public Guid JobSeekerId { get; set; }
+        public JobSeeker JobSeeker { get; set; } = null!;
     }
 
     public class WorkExperience
