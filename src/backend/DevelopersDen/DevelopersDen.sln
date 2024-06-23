@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevelopersDen.Library", "De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevelopersDen.DataAccess", "DevelopersDen.DataAccess\DevelopersDen.DataAccess.csproj", "{FC755F28-FC08-47D5-99D5-E9F755612501}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevelopersDen.Blanket", "DevelopersDen.Blanket\DevelopersDen.Blanket.csproj", "{13315A65-2F28-4584-B273-490AEBD81619}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{FC755F28-FC08-47D5-99D5-E9F755612501}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC755F28-FC08-47D5-99D5-E9F755612501}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC755F28-FC08-47D5-99D5-E9F755612501}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13315A65-2F28-4584-B273-490AEBD81619}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13315A65-2F28-4584-B273-490AEBD81619}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13315A65-2F28-4584-B273-490AEBD81619}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13315A65-2F28-4584-B273-490AEBD81619}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
