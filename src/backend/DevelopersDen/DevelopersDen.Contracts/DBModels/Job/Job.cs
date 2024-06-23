@@ -19,6 +19,7 @@ namespace DevelopersDen.Contracts.DBModels.Job
         [Required]
         public string City { get; set; }
         public DateTime PostedDate { get; set; }
+        public Guid RecruiterId { get; set; }
         public Guid RecruiterAccountId { get; set; }
         public RecruiterAccount RecruiterAccount { get; set; } = null!;
         public ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();

@@ -1,4 +1,4 @@
-﻿namespace DevelopersDen.Contracts.DTOs
+﻿namespace DevelopersDen.Contracts.DTOs.JobSeeker.Responses
 {
     public class JobSeekerDTO
     {

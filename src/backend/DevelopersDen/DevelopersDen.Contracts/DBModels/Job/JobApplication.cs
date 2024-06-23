@@ -1,10 +1,4 @@
-﻿using DevelopersDen.Contracts.DBModels.JobSeeker;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DevelopersDen.Contracts.DBModels.Job
 {
