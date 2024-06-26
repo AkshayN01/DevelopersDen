@@ -2,7 +2,7 @@
 
 namespace DevelopersDen.Interfaces.Repository
 {
-    public interface ISavedJobRepository
+    public interface ISavedJobRepository : IGenericRepository<SavedJob>
     {
         Task<IEnumerable<SavedJob>> GetAll(Guid SeekerId);
     }

@@ -2,8 +2,8 @@
 
 namespace DevelopersDen.Interfaces.Repository
 {
-    public interface IRecruiterRepository
+    public interface IRecruiterRepository : IGenericRepository<Recruiter>
     {
-        Task<RecruiterAccount> GetRecruiterAccount(string emailId, string password);
+        Task<List<Guid>> GetRecruiterIdByName(string name);
     }
 }

@@ -1,10 +1,27 @@
-﻿using DevelopersDen.Contracts.DTOs;
+﻿using AutoMapper;
+using DevelopersDen.Contracts.DBModels.JobSeeker;
+using DevelopersDen.Contracts.DTOs;
 using DevelopersDen.Contracts.DTOs.JobSeeker.Requests;
+using DevelopersDen.Contracts.Enums;
+using DevelopersDen.Interfaces.Repository;
+using DevelopersDen.Library.Generic;
+using DevelopersDen.Library.Services.Seeker;
 
 namespace DevelopersDen.Blanket.JobSeeker
 {
     public class SeekerProfileBL
     {
+        private readonly IMapper _mapper;
+        private readonly JobSeekerService _jobSeekerService;
+        private readonly IJobSeekerRepository _jobSeekerRepository;
+        private readonly IGenericRepository<JobSeekerProfile> _jobProfileRepository;
+        public SeekerProfileBL(IGenericRepository<JobSeekerProfile> jobProfileRepository, IJobSeekerRepository jobSeekerRepository, JobSeekerService jobSeekerService, IMapper mapper)
+        {
+            _jobProfileRepository = jobProfileRepository;
+            _jobSeekerRepository = jobSeekerRepository;
+            _jobSeekerService = jobSeekerService;
+            _mapper = mapper;
+        }
         public async Task<HTTPResponse> Login(LoginRequest loginRequest)
         {
             string message = string.Empty;
@@ -17,7 +34,34 @@ namespace DevelopersDen.Blanket.JobSeeker
                 if (String.IsNullOrEmpty(loginRequest.GoogleId) && String.IsNullOrEmpty(loginRequest.Password))
                     throw new Exception("Password or GoogleId is missing");
 
+                Contracts.DBModels.JobSeeker.JobSeeker jobSeeker = await _jobSeekerRepository.Login(loginRequest.Email, loginRequest.GoogleId);
 
+                if (jobSeeker == null && String.IsNullOrEmpty(loginRequest.GoogleId))
+                    throw new Exception("Invalid email id");
+                else if (jobSeeker == null && !String.IsNullOrEmpty(loginRequest.GoogleId))
+                {
+                    JobSeekerResgisterRequest resgisterRequest = new JobSeekerResgisterRequest()
+                    {
+                        Name = loginRequest.Name,
+                        Email = loginRequest.Email,
+                        GoogleId = loginRequest.GoogleId
+                    };
+                    return await Register(resgisterRequest);
+                }
+
+                //check password
+                bool IsValid = PasswordHasher.VerifyPassword(loginRequest.Password, jobSeeker.PasswordHash);
+
+                //if login successfull update last login time
+                if (!IsValid)
+                    throw new Exception("Invalid password");
+
+                jobSeeker.LastLogin = DateTime.UtcNow;
+
+                await _jobSeekerRepository.UpdateAsync(jobSeeker);
+                await _jobSeekerRepository.SaveAsync();
+
+                data = jobSeeker;
             }
             catch (Exception ex)
             {
@@ -36,7 +80,26 @@ namespace DevelopersDen.Blanket.JobSeeker
 
             try
             {
-                
+                Contracts.DBModels.JobSeeker.JobSeeker jobSeeker = new Contracts.DBModels.JobSeeker.JobSeeker();
+
+                //map data from DTO
+                _mapper.Map(resgisterRequest, jobSeeker);
+
+                if (jobSeeker == null)
+                    throw new Exception("data is null");
+
+                if(!String.IsNullOrEmpty(resgisterRequest.Password))
+                    jobSeeker.PasswordHash = PasswordHasher.HashPassword(resgisterRequest.Password);
+
+                jobSeeker.JobSeekerId = new Guid();
+                jobSeeker.StakeholderId = (int)StakeholderEnum.JobSeeker;
+                jobSeeker.CreatedAt = DateTime.UtcNow;
+                jobSeeker.IsActive = 0;
+                jobSeeker.IsEmailVerified = 0;
+
+
+                await _jobSeekerRepository.AddAsync(jobSeeker);
+                await _jobSeekerRepository.SaveAsync();
             }
             catch (Exception ex)
             {
@@ -45,6 +108,7 @@ namespace DevelopersDen.Blanket.JobSeeker
 
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
+        
         public async Task<HTTPResponse> AddProfile(string seekerGuid, SeekerProfileRequest profileRequest)
         {
             string message = string.Empty;
@@ -55,6 +119,23 @@ namespace DevelopersDen.Blanket.JobSeeker
             try
             {
                 //check if the seeker exists or not
+                Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(new Guid(seekerGuid), true);
+                if (jobSeeker == null) throw new Exception("No Seeker found");
+
+                if (jobSeeker.JobSeekerProfile != null) //job seeker already has a profile
+                    throw new Exception("Profile already exists");
+
+                JobSeekerProfile jobSeekerProfile = new JobSeekerProfile();
+                _mapper.Map(profileRequest, jobSeekerProfile);
+
+                if (profileRequest != null)
+                    throw new Exception("Invalid data");
+
+                jobSeekerProfile.JobSeekerId = jobSeeker.JobSeekerId;
+                jobSeekerProfile.JobSeekerProfileId = new Guid();
+
+                await _jobProfileRepository.AddAsync(jobSeekerProfile);
+                await _jobProfileRepository.SaveAsync();
             }
             catch (Exception ex)
             {
@@ -63,6 +144,7 @@ namespace DevelopersDen.Blanket.JobSeeker
 
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
+        
         public async Task<HTTPResponse> UpdateProfile(string seekerGuid, SeekerProfileRequest profileRequest)
         {
             string message = string.Empty;
@@ -73,8 +155,17 @@ namespace DevelopersDen.Blanket.JobSeeker
             try
             {
                 //check if the seeker exists or not
+                Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(new Guid(seekerGuid));
+                if (jobSeeker == null) throw new Exception("No Seeker found");
 
-                
+                JobSeekerProfile jobSeekerProfile = new JobSeekerProfile();
+                _mapper.Map(profileRequest, jobSeekerProfile);
+
+                if (profileRequest != null)
+                    throw new Exception("Invalid data");
+
+                await _jobProfileRepository.UpdateAsync(jobSeekerProfile);
+                await _jobProfileRepository.SaveAsync();
             }
             catch (Exception ex)
             {

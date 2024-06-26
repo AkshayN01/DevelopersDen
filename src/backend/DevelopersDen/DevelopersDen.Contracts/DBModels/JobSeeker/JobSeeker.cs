@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace DevelopersDen.Contracts.DBModels.JobSeeker
 {
+    [Index(nameof(Email), IsUnique = true)]
     public class JobSeeker : AuditableEntity
     {
         [Key]
@@ -16,7 +18,7 @@ namespace DevelopersDen.Contracts.DBModels.JobSeeker
         public string GoogleId { get; set; } //can be null for non-google users
         public string ProfilePictureUrl { get; set; }
         public DateTime? LastLogin { get; set; }
-        public int IsEmailVerified { get; set; }
+        public int IsEmailVerified { get; set; } = 0;
         public JobSeekerProfile? JobSeekerProfile { get; set; }
         public ICollection<Job.JobApplication> JobApplications { get; set; } = new List<Job.JobApplication>();
         public Int32 StakeholderId { get; set; }

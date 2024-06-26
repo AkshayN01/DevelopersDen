@@ -18,6 +18,8 @@ namespace DevelopersDen.Contracts.DBModels.Job
         public string Location { get; set; }
         [Required]
         public string City { get; set; }
+        [Required]
+        public int JobType { get; set; }
         public DateTime PostedDate { get; set; }
         public Guid RecruiterId { get; set; }
         public Guid RecruiterAccountId { get; set; }

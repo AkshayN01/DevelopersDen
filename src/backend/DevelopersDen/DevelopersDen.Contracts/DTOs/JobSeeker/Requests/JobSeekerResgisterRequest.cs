@@ -11,5 +11,6 @@ namespace DevelopersDen.Contracts.DTOs.JobSeeker.Requests
         [Required]
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
+        public string GoogleId {  get; set; }
     }
 }

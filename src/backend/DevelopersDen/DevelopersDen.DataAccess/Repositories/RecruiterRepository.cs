@@ -4,15 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevelopersDen.DataAccess.Repositories
 {
-    public class RecruiterRepository : GenericRepository<RecruiterAccount>, IRecruiterRepository
+    public class RecruiterRepository : GenericRepository<Recruiter>, IRecruiterRepository
     {
         public RecruiterRepository(ApplicationDbContext context) : base(context)
         {
         }
 
-        public async Task<RecruiterAccount?> GetRecruiterAccount(string emailId, string password)
+        public async Task<List<Guid>> GetRecruiterIdByName(string name)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.EmailId == emailId && x.Password == password);
+            return await _dbSet
+                .Where(x => x.CompanyName.StartsWith(name) || x.CompanyName.Contains(name))
+                .Select(x => x.RecruiterId).ToListAsync();
         }
     }
 }

@@ -13,5 +13,6 @@ namespace DevelopersDen.Contracts.DTOs.JobSeeker.Requests
         public string Email { get; set; }
         public string Password { get; set; }
         public string GoogleId { get; set; }
+        public string Name { get; set; }
     }
 }
