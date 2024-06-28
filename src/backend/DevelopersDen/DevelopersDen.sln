@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopersDen.Blanket", "De
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "DevelopersDen.Client", "DevelopersDen.Client\DevelopersDen.Client.esproj", "{0D7BD7DB-218C-4862-8D8F-667B668179EB}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{20E5F072-2DE3-4F7A-86D5-CDE31FB41D51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{0D7BD7DB-218C-4862-8D8F-667B668179EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D7BD7DB-218C-4862-8D8F-667B668179EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D7BD7DB-218C-4862-8D8F-667B668179EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{20E5F072-2DE3-4F7A-86D5-CDE31FB41D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E5F072-2DE3-4F7A-86D5-CDE31FB41D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20E5F072-2DE3-4F7A-86D5-CDE31FB41D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20E5F072-2DE3-4F7A-86D5-CDE31FB41D51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

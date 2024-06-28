@@ -2,6 +2,8 @@
 using DevelopersDen.Contracts.DBModels.Job;
 using DevelopersDen.Contracts.DBModels.JobSeeker;
 using DevelopersDen.Contracts.DBModels.Recruiter;
+using DevelopersDen.DataAccess.Data.Recruiter;
+using DevelopersDen.DataAccess.Data.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevelopersDen.DataAccess
@@ -79,6 +81,32 @@ namespace DevelopersDen.DataAccess
                 .HasForeignKey(e => e.JobId)
                 .IsRequired();
 
+            modelBuilder.Entity<Notification>()
+                .Property(p => p.Noti)
+                .HasColumnType("jsonb")
+                .IsRequired();
+
+            modelBuilder.Entity<JobSeekerProfile>()
+                .Property(p => p.WorkExperience)
+                .HasColumnType("jsonb")
+                .IsRequired();
+
+            modelBuilder.Entity<JobSeekerProfile>()
+                .Property(p => p.KeySkills)
+                .HasColumnType("jsonb")
+                .IsRequired();
+
+            modelBuilder.Entity<JobSeekerProfile>()
+                .Property(p => p.SearchFilter)
+                .HasColumnType("jsonb")
+                .IsRequired();
+
+
+            modelBuilder.Entity<Stakeholder>().HasData(GenericFactData.GetStakeholders());
+            modelBuilder.Entity<ApplicationStatus>().HasData(GenericFactData.GetApplicationStatuses());
+            modelBuilder.Entity<Recruiter>().HasData(RecruiterData.GetRecruiters());
+            modelBuilder.Entity<RecruiterAccount>().HasData(RecruiterData.GetRecruiterAccounts());
+            modelBuilder.Entity<Job>().HasData(JobData.GetJobs());
         }
 
     }
