@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     build:
       context: ../DevelopersDen
-      dockerfile: /DevelopersDen/Dockerfile
+      dockerfile: /DevelopersDen.API/Dockerfile
     ports:
       - "8080:8080"
       - "8081:8081"
