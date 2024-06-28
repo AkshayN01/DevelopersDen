@@ -1,16 +1,17 @@
-﻿using DevelopersDen.Contracts.DBModels;
-using DevelopersDen.Contracts.DBModels.Job;
-using DevelopersDen.Contracts.DBModels.Recruiter;
-using DevelopersDen.Contracts.DTOs.Recruiter.Responses;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DevelopersDen.Contracts.DTOs.Recruiter.Responses;
 
 namespace DevelopersDen.Contracts.DTOs.JobSeeker.Responses
 {
+    public class JobListDTO
+    {
+        public List<JobDTO> Jobs { get; set; }
+        public Int32 TotalCount { get; set; }
+    }
+    public class JobApplicationListDTO
+    {
+        public List<JobApplicationDTO> Applications { get; set; }
+        public Int32 TotalCount { get; set; }
+    }
     public class JobApplicationDTO
     {
         public Guid ApplicationId { get; set; }
