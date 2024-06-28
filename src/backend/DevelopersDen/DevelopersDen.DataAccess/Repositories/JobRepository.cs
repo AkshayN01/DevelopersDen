@@ -1,6 +1,7 @@
 ﻿using DevelopersDen.Contracts.DBModels.Job;
 using DevelopersDen.Interfaces.Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace DevelopersDen.DataAccess.Repositories
@@ -21,9 +22,20 @@ namespace DevelopersDen.DataAccess.Repositories
             await UpdateAsync(job);
         }
 
-        public async Task<IEnumerable<Job>> FilterJobs(Expression<Func<Job, bool>> condition)
+        public async Task<List<Job>> FilterJobs(Expression<Func<Job, bool>> condition, int pageNumber, int pageSize, bool applyPagination = true, bool tracked = false)
         {
-            return await _dbSet.Where(condition).ToListAsync();
+            IQueryable<Job> query = _dbSet;
+
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
+
+            query = query.Where(condition);
+            if (applyPagination)
+                query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<Job>> GetAllJobs(Guid Id, bool IsRecruiter)
