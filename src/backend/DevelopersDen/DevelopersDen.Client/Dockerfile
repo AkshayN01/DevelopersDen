@@ -1,10 +1,11 @@
-FROM node:14-alpine AS build
-WORKDIR /usr/src/app
-COPY package.json package-lock.json ./
+FROM node:latest AS build
+WORKDIR /app
+COPY . /app/
 RUN npm install
-COPY . .
-RUN npm run localdocker
+RUN npm run build
 
 FROM nginx:alpine
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
-COPY --from=build /usr/src/app/dist/client /usr/share/nginx/html
+COPY --from=build /app/dist/developers-den.client/browser /usr/share/nginx/html
+EXPOSE 80
+EXPOSE 443

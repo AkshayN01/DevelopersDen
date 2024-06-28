@@ -10,6 +10,7 @@ import { JobApplicationsComponent } from './job-seeker/components/protected/job-
 import { LoginCompletedComponent } from './job-seeker/components/login-completed/login-completed.component';
 
 const routes: Routes = [
+  {path: '', pathMatch: 'full', redirectTo: 'jobSeeker/login',},
   { path: 'jobSeeker', component: JobSeekerComponent, children: [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },

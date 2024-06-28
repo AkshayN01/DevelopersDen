@@ -1,34 +1,14 @@
-version: "3.4"
+version: '3.4'
 
 services:
-  database:
-    container_name: developersden.database
-    image: postgres
-    restart: unless-stopped
-    env_file:
-      - database.env
+  developersden.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
     ports:
-      - "5439:5432"
-  # api:
-  #   container_name: api
-  #   restart: unless-stopped
-  #   build:
-  #     context: ./DevelopersDen.API
-  #     dockerfile: ./Dockerfile
-  #   ports:
-  #     - 6578:8800
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=LocalDocker
-  #     - ASPNETCORE_URLS=http://+:8800
-  #   depends_on:
-  #     - database
-  # web:
-  #   container_name: web
-  #   restart: unless-stopped
-  #   build:
-  #    context: ./DevelopersDen.Client
-  #    dockerfile: ./Dockerfile
-  #   ports:
-  #     - '8080:80'
-  #   depends_on:
-  #     - api
+      - "8080"
+      - "8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

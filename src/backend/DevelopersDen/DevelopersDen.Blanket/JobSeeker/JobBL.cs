@@ -38,7 +38,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                 if (jobSeeker == null) throw new Exception("No Seeker found");
 
                 //update search filter in the seeker profile
-                if(jobSeeker.JobSeekerProfile != null) 
+                if(jobSeeker.JobSeekerProfile != null && jobSearchFilter != null) 
                 {
                     _mapper.Map(jobSearchFilter, jobSeeker.JobSeekerProfile.SearchFilter);
                     await _unitOfWork._JobSeekerProfileRepository.UpdateAsync(jobSeeker.JobSeekerProfile);

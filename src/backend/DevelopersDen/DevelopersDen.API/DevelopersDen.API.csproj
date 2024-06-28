@@ -22,8 +22,4 @@
     <ProjectReference Include="..\DevelopersDen.Blanket\DevelopersDen.Blanket.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

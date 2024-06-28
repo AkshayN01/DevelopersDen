@@ -13,12 +13,10 @@ namespace DevelopersDen.Blanket.JobSeeker
     {
         private readonly IMapper _mapper;
         private readonly JobSeekerService _jobSeekerService;
-        private readonly IJobSeekerRepository _jobSeekerRepository;
-        private readonly IGenericRepository<JobSeekerProfile> _jobProfileRepository;
-        public SeekerProfileBL(IGenericRepository<JobSeekerProfile> jobProfileRepository, IJobSeekerRepository jobSeekerRepository, JobSeekerService jobSeekerService, IMapper mapper)
+        private readonly IUnitOfWork _unitOfWork;
+        public SeekerProfileBL(IUnitOfWork unitOfWork, JobSeekerService jobSeekerService, IMapper mapper)
         {
-            _jobProfileRepository = jobProfileRepository;
-            _jobSeekerRepository = jobSeekerRepository;
+            _unitOfWork = unitOfWork;
             _jobSeekerService = jobSeekerService;
             _mapper = mapper;
         }
@@ -34,7 +32,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                 if (String.IsNullOrEmpty(loginRequest.GoogleId) && String.IsNullOrEmpty(loginRequest.Password))
                     throw new Exception("Password or GoogleId is missing");
 
-                Contracts.DBModels.JobSeeker.JobSeeker jobSeeker = await _jobSeekerRepository.Login(loginRequest.Email, loginRequest.GoogleId);
+                Contracts.DBModels.JobSeeker.JobSeeker jobSeeker = await _unitOfWork._JobSeekerRepository.Login(loginRequest.Email, loginRequest.GoogleId);
 
                 if (jobSeeker == null && String.IsNullOrEmpty(loginRequest.GoogleId))
                     throw new Exception("Invalid email id");
@@ -58,8 +56,8 @@ namespace DevelopersDen.Blanket.JobSeeker
 
                 jobSeeker.LastLogin = DateTime.UtcNow;
 
-                await _jobSeekerRepository.UpdateAsync(jobSeeker);
-                await _jobSeekerRepository.SaveAsync();
+                await _unitOfWork._JobSeekerRepository.UpdateAsync(jobSeeker);
+                _unitOfWork.Commit();
 
                 data = jobSeeker;
             }
@@ -98,8 +96,8 @@ namespace DevelopersDen.Blanket.JobSeeker
                 jobSeeker.IsEmailVerified = 0;
 
 
-                await _jobSeekerRepository.AddAsync(jobSeeker);
-                await _jobSeekerRepository.SaveAsync();
+                await _unitOfWork._JobSeekerRepository.AddAsync(jobSeeker);
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
@@ -134,8 +132,8 @@ namespace DevelopersDen.Blanket.JobSeeker
                 jobSeekerProfile.JobSeekerId = jobSeeker.JobSeekerId;
                 jobSeekerProfile.JobSeekerProfileId = new Guid();
 
-                await _jobProfileRepository.AddAsync(jobSeekerProfile);
-                await _jobProfileRepository.SaveAsync();
+                await _unitOfWork._JobSeekerProfileRepository.AddAsync(jobSeekerProfile);
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
@@ -164,8 +162,8 @@ namespace DevelopersDen.Blanket.JobSeeker
                 if (profileRequest != null)
                     throw new Exception("Invalid data");
 
-                await _jobProfileRepository.UpdateAsync(jobSeekerProfile);
-                await _jobProfileRepository.SaveAsync();
+                await _unitOfWork._JobSeekerProfileRepository.UpdateAsync(jobSeekerProfile);
+                _unitOfWork.Commit();
             }
             catch (Exception ex)
             {
