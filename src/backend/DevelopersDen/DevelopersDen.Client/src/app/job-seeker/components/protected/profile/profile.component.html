@@ -1,0 +1,89 @@
+<div class="container">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <h2>User Profile</h2>
+    
+    <mat-form-field style="width: 100%;">
+			<mat-label>Resume</mat-label>
+			<button mat-icon-button matPrefix (click)="f_input.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+			<input type="text" readonly matInput [formControl]="display" />
+			<input type="file" hidden #f_input (change)="onFileChange($event)" />
+			<mat-error>this field is required</mat-error>
+		</mat-form-field>
+
+    <mat-form-field class="example-chip-list" style="width: 100%;">
+      <mat-label>Key Skills</mat-label>
+      <mat-chip-grid #chipGrid aria-label="Key Skills">
+        @for (skill of skills(); track skill) {
+          <mat-chip-row
+            (removed)="remove(skill)"
+            [editable]="true"
+            (edited)="edit(skill, $event)"
+            [aria-description]="'press enter to edit ' + skill.name"
+          >
+            {{skill.name}}
+            <button matChipRemove [attr.aria-label]="'remove ' + skill.name">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        }
+        <input
+          placeholder="Key Skills..."
+          [matChipInputFor]="chipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [matChipInputAddOnBlur]="addOnBlur"
+          (matChipInputTokenEnd)="add($event)"
+        />
+      </mat-chip-grid>
+    </mat-form-field>
+
+    <mat-form-field style="width: 100%;">
+      <mat-label>Summary</mat-label>
+      <textarea matInput placeholder="Summary" formControlName="summary"></textarea>
+    </mat-form-field>
+
+    <div formArrayName="workHistory">
+      <h2>Work History</h2>
+      <button mat-raised-button color="primary" (click)="addWorkHistory()">+ Add another work history</button><br>
+    
+      <div *ngIf="workHistory.controls.length > 0">
+        <div *ngFor="let history of workHistory.controls; let i=index">
+          <div formGroupName="{{i}}">
+          <!-- The repeated partner template -->
+          <mat-form-field style="width: 45%; margin-right: 1em;">
+              <mat-label for="companyName">Company Name</mat-label>
+              <input matInput placeholder="Company Name" type="text" id="history-{{ i }}" formControlName="companyName">
+          </mat-form-field>
+
+          <mat-form-field style="width: 45%;">
+              <mat-label for="designation">Designation</mat-label>
+              <input matInput placeholder="Designation" type="text" id="history-{{ i }}" formControlName="designation">
+          </mat-form-field>
+
+          <mat-form-field style="width: 100%;">
+             <mat-label for="workDescription">Work Description</mat-label>
+             <textarea matInput placeholder="Work Description" id="history{{ i }}" formControlName="workDescription"></textarea>
+          </mat-form-field>
+          <mat-form-field style="width: 45%;margin-right: 1em;">
+            <mat-label>Start Date</mat-label>
+            <input matInput [matDatepicker]="startdatepicker" formControlName="startDate">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="startdatepicker"></mat-datepicker-toggle>
+            <mat-datepicker #startdatepicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field style="width: 45%;">
+            <mat-label>End Date</mat-label>
+            <input matInput [matDatepicker]="enddatepicker" formControlName="endDate">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="enddatepicker"></mat-datepicker-toggle>
+            <mat-datepicker #enddatepicker></mat-datepicker>
+          </mat-form-field>
+          <mat-checkbox formControlName="isCurrent">Is Current</mat-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!profileForm.valid">Submit</button>
+  </form>
+</div>
