@@ -6,6 +6,7 @@ namespace DevelopersDen.Contracts.DBModels.JobSeeker
     {
         [Key]
         public Guid JobSeekerProfileId { get; set; }
+        public String Summary { get; set; }
         [Required]
         public byte[] Resume {  get; set; }
         public List<WorkExperience> WorkExperience { get; set; } = new List<WorkExperience>();
@@ -19,6 +20,8 @@ namespace DevelopersDen.Contracts.DBModels.JobSeeker
     {
         [Required]
         public string CompanyName { get; set; }
+        [Required]
+        public string Designation { get; set; }
         [Required]
         public string WorkDescription { get; set; }
         [Required]
