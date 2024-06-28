@@ -8,6 +8,7 @@ using DevelopersDen.Contracts.DBModels.Job;
 using DevelopersDen.Contracts.Enums;
 using DevelopersDen.Contracts.DBModels.Recruiter;
 using DevelopersDen.Contracts.DTOs.JobSeeker.Responses;
+using DevelopersDen.Contracts.DTOs.Recruiter.Responses;
 
 namespace DevelopersDen.Blanket.JobSeeker
 {
@@ -106,10 +107,24 @@ namespace DevelopersDen.Blanket.JobSeeker
                 // Combine the conditions
                 var combinedCondition = Library.Generic.Utility.CombineConditions<Job>(expressions);
 
-                IEnumerable<Job> jobs = await _unitOfWork._JobRepository.FilterJobs(combinedCondition);
+                List<Job> jobs = await _unitOfWork._JobRepository.FilterJobs(combinedCondition, pageNumber, pageSize);
                 if(jobs.Any())
                 {
-                    data = jobs.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    List<JobDTO> jobDTOs = new List<JobDTO>();
+                    foreach(Job job in jobs)
+                    {
+                        JobDTO jobDTO = new JobDTO();
+                        _mapper.Map(job, jobDTO);
+
+                        RecruiterDTO recruiterDTO = new RecruiterDTO();
+
+                        Recruiter recruiterDetails = await _unitOfWork._RecruiterRepository.GetByGuidAsync(job.RecruiterId);
+                        _mapper.Map(recruiterDetails, recruiterDTO);
+
+                        jobDTO.Recruiter = recruiterDTO;
+                        jobDTOs.Add(jobDTO);
+                    }
+                    data = jobDTOs;
                 }
 
             }
