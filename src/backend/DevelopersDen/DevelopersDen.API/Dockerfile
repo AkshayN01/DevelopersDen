@@ -5,7 +5,7 @@ USER app
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-
+ENV ASPNETCORE_Kestrel__Endpoints__Https__Url=https://*:8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
