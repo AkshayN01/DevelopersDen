@@ -6,6 +6,7 @@ using DevelopersDen.Interfaces.Repository;
 using DevelopersDen.Library.Services.Seeker;
 using DevelopersDen.Library.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,10 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 app.EnsureMigrationOfContext<ApplicationDbContext>();
-
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
