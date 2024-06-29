@@ -52,6 +52,7 @@ namespace DevelopersDen.Library.Profiles
             #region " requests "
 
             CreateMap<SeekerProfileRequest, JobSeekerProfile>()
+                .ForMember(x => x.Resume, opt => opt.Ignore())
                 .ForMember(dest => dest.KeySkills, src => src.MapFrom(x => x.KeySkills))
                 .ForMember(dest => dest.Summary, src => src.MapFrom(x => x.Summary));
 
