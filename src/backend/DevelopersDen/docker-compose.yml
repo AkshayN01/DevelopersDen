@@ -20,11 +20,11 @@ services:
       context: ../DevelopersDen
       dockerfile: ./DevelopersDen.API/Dockerfile
     expose:
-      - "8080"
+      - "5001"
       - "8081"
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "5001:5001"
+      - "5002:5002"
     volumes:
       - /home/akshayn/DevelopersDen/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     depends_on:
