@@ -22,7 +22,7 @@ services:
       - "8080"
       - "8081"
     volumes:
-      - /home/akshayn/DevelopersDen/:/https:ro
+      - /home/akshayn/DevelopersDen/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     depends_on:
       - developersden.database
     networks:
