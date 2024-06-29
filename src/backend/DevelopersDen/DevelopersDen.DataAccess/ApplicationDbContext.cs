@@ -97,6 +97,10 @@ namespace DevelopersDen.DataAccess
 
             modelBuilder.Entity<JobSeekerProfile>()
                 .Property(p => p.WorkExperience)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
+                    v => JsonSerializer.Deserialize<List<WorkExperience>>(v, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                )
                 .HasColumnType("jsonb")
                 .IsRequired();
 
