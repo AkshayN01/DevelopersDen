@@ -21,7 +21,7 @@ services:
       dockerfile: ./DevelopersDen.API/Dockerfile
     expose:
       - "5001"
-      - "8081"
+      - "5002"
     ports:
       - "5001:5001"
       - "5002:5002"

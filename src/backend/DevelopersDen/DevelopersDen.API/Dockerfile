@@ -4,9 +4,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
-
-ENV ASPNETCORE_Kestrel__Endpoints__Https__Url=https://*:5002
+EXPOSE 5002
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
