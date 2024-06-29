@@ -22,13 +22,10 @@ builder.Services.AddScoped(typeof(IJobSeekerRepository), typeof(JobSeekerReposit
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<JobSeekerService>();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-builder.Services.AddControllers(options =>
+builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
-    options.OutputFormatters.Add(new SystemTextJsonOutputFormatter(new JsonSerializerOptions(JsonSerializerDefaults.Web)
-    {
-        ReferenceHandler = ReferenceHandler.Preserve,
-    }));
+    options.JsonSerializerOptions.MaxDepth = 64;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

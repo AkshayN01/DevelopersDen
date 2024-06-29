@@ -2,6 +2,7 @@
 using DevelopersDen.Contracts.DBModels.JobSeeker;
 using DevelopersDen.Contracts.DTOs;
 using DevelopersDen.Contracts.DTOs.JobSeeker.Requests;
+using DevelopersDen.Contracts.DTOs.JobSeeker.Responses;
 using DevelopersDen.Contracts.Enums;
 using DevelopersDen.Interfaces.Repository;
 using DevelopersDen.Library.Generic;
@@ -155,7 +156,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                     await _unitOfWork._JobSeekerResumeRepository.AddAsync(uploadedFile);
                     _unitOfWork.Commit();
                 }
-                data = jobSeekerProfile;
+                data = jobSeekerProfile.JobSeekerProfileId;
                 retVal = 1;
             }
             catch (Exception ex)
@@ -180,9 +181,22 @@ namespace DevelopersDen.Blanket.JobSeeker
 
                 if (jobSeeker.JobSeekerProfile == null) //job seeker already has a profile
                     throw new Exception("No Profile exists");
+                JobSeekerProfileDTO jobSeekerProfile = new JobSeekerProfileDTO()
+                {
+                    JobSeekerProfileId = jobSeeker.JobSeekerProfile.JobSeekerProfileId,
+                    KeySkills = jobSeeker.JobSeekerProfile.KeySkills,
+                    Summary = jobSeeker.JobSeekerProfile.Summary,
+                };
+                _mapper.Map(jobSeeker.JobSeekerProfile.WorkExperience, jobSeekerProfile.WorkExperience);
 
-                JobSeekerProfile jobSeekerProfile = jobSeeker.JobSeekerProfile;
-                jobSeekerProfile.Resume = await _unitOfWork._JobSeekerResumeRepository.GetBySeekerProfileId(jobSeekerProfile.JobSeekerProfileId);
+                var resume = await _unitOfWork._JobSeekerResumeRepository.GetBySeekerProfileId(jobSeekerProfile.JobSeekerProfileId);
+                jobSeekerProfile.Resume = new JobSeekerResumeDTO()
+                {
+                    ContentType = resume.ContentType,
+                    Data = resume.Data,
+                    FileName = resume.FileName,
+                };
+
                 data = jobSeekerProfile;
                 retVal = 1;
             }
