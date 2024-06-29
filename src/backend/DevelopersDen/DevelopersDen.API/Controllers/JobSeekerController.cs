@@ -56,13 +56,15 @@ namespace DevelopersDen.API.Controllers
 
         [HttpPost]
         [Route("/api/jobseeker/{userguid}/add-profile")]
-        public async Task<IActionResult> JobSeekerAddProfile(string userguid, [FromBody] SeekerProfileRequest profileRequest, [FromForm]IFormFile file)
+        public async Task<IActionResult> JobSeekerAddProfile(string userguid, [FromForm] SeekerProfileRequest profileRequest)
         {
-            if (!ModelState.IsValid || file == null || file.Length == 0) { return BadRequest(ModelState); };
+            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+
+            if(profileRequest.Resume == null || profileRequest.Resume.Length == 0) {  return BadRequest(); }
 
             try
             {
-                var httpResponse = await _JobSeekerBlanket.AddProfile(userguid, profileRequest, file);
+                var httpResponse = await _JobSeekerBlanket.AddProfile(userguid, profileRequest);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -73,13 +75,13 @@ namespace DevelopersDen.API.Controllers
 
         [HttpPut]
         [Route("/api/jobseeker/{userguid}/update-profile")]
-        public async Task<IActionResult> JobSeekerUpdateProfile(string userguid, [FromBody] SeekerProfileRequest profileRequest, [FromForm] IFormFile file)
+        public async Task<IActionResult> JobSeekerUpdateProfile(string userguid, [FromForm] SeekerProfileRequest profileRequest)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
 
             try
             {
-                var httpResponse = await _JobSeekerBlanket.UpdateProfile(userguid, profileRequest, file);
+                var httpResponse = await _JobSeekerBlanket.UpdateProfile(userguid, profileRequest);
                 return Ok(httpResponse);
             }
             catch (Exception ex)

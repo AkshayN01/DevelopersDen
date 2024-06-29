@@ -113,7 +113,7 @@ namespace DevelopersDen.Blanket.JobSeeker
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
         
-        public async Task<HTTPResponse> AddProfile(string seekerGuid, SeekerProfileRequest profileRequest, IFormFile file)
+        public async Task<HTTPResponse> AddProfile(string seekerGuid, SeekerProfileRequest profileRequest)
         {
             string message = string.Empty;
             Int32 retVal = -40;
@@ -143,11 +143,11 @@ namespace DevelopersDen.Blanket.JobSeeker
                 _unitOfWork.Commit();
                 using (var memoryStream = new MemoryStream())
                 {
-                    await file.CopyToAsync(memoryStream);
+                    await profileRequest.Resume.CopyToAsync(memoryStream);
                     var uploadedFile = new JobSeekerResume
                     {
-                        FileName = file.FileName,
-                        ContentType = file.ContentType,
+                        FileName = profileRequest.Resume.FileName,
+                        ContentType = profileRequest.Resume.ContentType,
                         Data = memoryStream.ToArray(),
                         JobSeekerProfileId = jobSeekerProfile.JobSeekerProfileId
                     };
@@ -194,7 +194,7 @@ namespace DevelopersDen.Blanket.JobSeeker
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
 
-        public async Task<HTTPResponse> UpdateProfile(string seekerGuid, SeekerProfileRequest profileRequest, IFormFile file)
+        public async Task<HTTPResponse> UpdateProfile(string seekerGuid, SeekerProfileRequest profileRequest)
         {
             string message = string.Empty;
             Int32 retVal = -40;
@@ -215,15 +215,15 @@ namespace DevelopersDen.Blanket.JobSeeker
                 }
 
                 //upload new resume
-                if(file != null && file.Length != 0)
+                if(profileRequest.Resume != null && profileRequest.Resume.Length != 0)
                 {
                     using (var memoryStream = new MemoryStream())
                     {
-                        await file.CopyToAsync(memoryStream);
+                        await profileRequest.Resume.CopyToAsync(memoryStream);
                         var uploadedFile = new JobSeekerResume
                         {
-                            FileName = file.FileName,
-                            ContentType = file.ContentType,
+                            FileName = profileRequest.Resume.FileName,
+                            ContentType = profileRequest.Resume.ContentType,
                             Data = memoryStream.ToArray(),
                             JobSeekerProfileId = jobSeekerProfile.JobSeekerProfileId
                         };

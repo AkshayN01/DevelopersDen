@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace DevelopersDen.Contracts.DTOs.JobSeeker.Requests
 {
     public class SeekerProfileRequest
     {
-        [Required]
-        public byte[] Resume { get; set; }
+        public IFormFile Resume {  get; set; }
         public string Summary { get; set; }
         public List<WorkExperienceRequestDTO> WorkExperience { get; set; } = new List<WorkExperienceRequestDTO>();
         public List<string> KeySkills { get; set; } = new List<string>();
