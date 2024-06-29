@@ -1,5 +1,5 @@
 FROM nginx:latest
 
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY akshaynambly_info_chain.crt /etc/ssl/certs/localhost.crt
-COPY server.key /etc/ssl/private/localhost.key
+COPY /home/akshayn/DevelopersDen/akshaynambly_info_chain.crt /etc/ssl/certs/akshaynambly_info_chain.crt
+COPY /home/akshayn/DevelopersDen/akshaynambly_info.key /etc/ssl/private/akshaynambly_info.key

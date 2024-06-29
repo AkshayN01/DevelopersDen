@@ -1,14 +1,6 @@
 version: "3.8"
 
 services:
-  developersden.reverseproxy:
-    build: 
-      context: ./nginx
-      dockerfile: Dockerfile
-    expose:
-      - "80:80"
-      - "443:443"
-    restart: always
   developersden.database:
     container_name: developersden.database
     image: postgres
@@ -17,6 +9,8 @@ services:
       - database.env
     ports:
       - "5439:5432"
+    networks:
+      - webnet
   developersden.api:
     image: ${DOCKER_REGISTRY-}developersden.api
     container_name: developersden.api
@@ -28,6 +22,8 @@ services:
       - "80"
     depends_on:
       - developersden.database
+    networks:
+      - webnet
   developersden.web:
     container_name: developersden.web
     restart: unless-stopped
@@ -38,6 +34,8 @@ services:
       - '80'
     depends_on:
       - developersden.api
+    networks:
+      - webnet
   developersden.nginx:
     image: nginx:latest
     container_name: developersden.nginx
@@ -45,9 +43,13 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certs/fullchain.pem:/etc/ssl/certs/akshaynambly_info_chain.cert
-      - ./certs/privkey.pem:/etc/ssl/private/akshaynambly_info.key
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - /home/akshayn/DevelopersDen/akshaynambly_info_chain.crt:/etc/ssl/certs/akshaynambly_info_chain.crt
+      - /home/akshayn/DevelopersDen/akshaynambly_info.key:/etc/ssl/private/akshaynambly_info.key
     depends_on:
       - developersden.api
       - developersden.web
+    networks:
+      - webnet
+networks:
+  webnet:
