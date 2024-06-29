@@ -13,6 +13,7 @@ services:
       - webnet
   developersden.api:
     image: ${DOCKER_REGISTRY-}developersden.api
+    user: root
     container_name: developersden.api
     restart: unless-stopped
     build:
