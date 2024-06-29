@@ -26,7 +26,6 @@ namespace DevelopersDen.Contracts.DTOs.JobSeeker.Responses
     {
         public string FileName { get; set; }
         public string ContentType { get; set; }
-        [JsonIgnore]
         public byte[] Data { get; set; }
     }
     public class WorkExperienceDTO

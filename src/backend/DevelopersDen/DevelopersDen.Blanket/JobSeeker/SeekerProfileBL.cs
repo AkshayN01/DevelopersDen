@@ -187,7 +187,8 @@ namespace DevelopersDen.Blanket.JobSeeker
                     KeySkills = jobSeeker.JobSeekerProfile.KeySkills,
                     Summary = jobSeeker.JobSeekerProfile.Summary,
                 };
-                _mapper.Map(jobSeeker.JobSeekerProfile.WorkExperience, jobSeekerProfile.WorkExperience);
+                var workexperiences = _mapper.Map<List<WorkExperienceDTO>>(jobSeeker.JobSeekerProfile.WorkExperience);
+                jobSeekerProfile.WorkExperience = workexperiences;
 
                 var resume = await _unitOfWork._JobSeekerResumeRepository.GetBySeekerProfileId(jobSeekerProfile.JobSeekerProfileId);
                 jobSeekerProfile.Resume = new JobSeekerResumeDTO()

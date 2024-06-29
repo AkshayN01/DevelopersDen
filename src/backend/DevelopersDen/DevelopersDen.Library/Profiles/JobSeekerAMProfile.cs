@@ -26,7 +26,7 @@ namespace DevelopersDen.Library.Profiles
                 .ForMember(dest => dest.PhoneNumber, src => src.MapFrom(x => x.PhoneNumber))
                 .ForMember(dest => dest.GoogleId, src => src.MapFrom(x => x.GoogleId));
 
-            CreateMap<WorkExperienceDTO, WorkExperience>()
+            CreateMap<WorkExperience, WorkExperienceDTO>()
                 .ForMember(dest => dest.EndDate, src => src.MapFrom(x => x.EndDate))
                 .ForMember(dest => dest.IsCurrent, src => src.MapFrom(x => x.IsCurrent))
                 .ForMember(dest => dest.CompanyName, src => src.MapFrom(x => x.CompanyName))
