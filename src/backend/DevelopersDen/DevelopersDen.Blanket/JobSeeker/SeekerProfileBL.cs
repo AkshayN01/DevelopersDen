@@ -138,6 +138,7 @@ namespace DevelopersDen.Blanket.JobSeeker
 
                 jobSeekerProfile.JobSeekerId = jobSeeker.JobSeekerId;
                 jobSeekerProfile.JobSeekerProfileId = new Guid();
+                jobSeekerProfile.WorkExperience = _mapper.Map<List<WorkExperience>>(profileRequest.WorkExperience);
 
 
                 await _unitOfWork._JobSeekerProfileRepository.AddAsync(jobSeekerProfile);
@@ -248,9 +249,9 @@ namespace DevelopersDen.Blanket.JobSeeker
                 }
 
                 if (profileRequest.WorkExperience.Any())
-                    _mapper.Map(profileRequest.WorkExperience, jobSeekerProfile.WorkExperience);
+                    jobSeekerProfile.WorkExperience = _mapper.Map<List<WorkExperience>>(profileRequest.WorkExperience);
 
-                if(profileRequest.KeySkills.Any())
+                if (profileRequest.KeySkills.Any())
                     jobSeekerProfile.KeySkills = profileRequest.KeySkills;
 
                 if(!String.IsNullOrEmpty(profileRequest.Summary))
