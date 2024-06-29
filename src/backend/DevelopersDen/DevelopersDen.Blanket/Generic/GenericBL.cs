@@ -31,6 +31,7 @@ namespace DevelopersDen.Blanket.Generic
             {
                 //check if seeker exists or not
                 data = await _unitOfWork._StakeholderRepository.GetAllAsync();
+                retVal = 1;
             }
             catch (Exception ex)
             {
@@ -51,6 +52,7 @@ namespace DevelopersDen.Blanket.Generic
             {
                 //check if seeker exists or not
                 data = await _unitOfWork._ApplicationStatusRepository.GetAllAsync();
+                retVal = 1;
             }
             catch (Exception ex)
             {

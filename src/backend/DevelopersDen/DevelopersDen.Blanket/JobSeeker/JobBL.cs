@@ -131,6 +131,7 @@ namespace DevelopersDen.Blanket.JobSeeker
 
                     response.Jobs = jobDTOs;
                     data = response;
+                    retVal = 1;
                 }
 
             }
@@ -177,7 +178,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                         _unitOfWork.Commit();
                     }
                 }
-                else if (status == (int)ApplicationStatusEnum.Applied){
+                else if (application == null && status == (int)ApplicationStatusEnum.Applied){
                     JobApplication jobApplication = new JobApplication()
                     {
                         ApplicationStatusId = status,
@@ -189,8 +190,13 @@ namespace DevelopersDen.Blanket.JobSeeker
                     await _unitOfWork._JobApplicationRepository.AddAsync(jobApplication);
                     _unitOfWork.Commit();
                 }
+                else
+                {
+                    throw new Exception("Invalid status");
+                }
 
                 data = true;
+                retVal = 1;
             }
             catch (Exception ex)
             {
@@ -232,6 +238,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                 _mapper.Map(recruiterDetails, jobApplicationDTO.Job.Recruiter);
                 
                 data = jobApplicationDTO;
+                retVal = 1;
             }
             catch (Exception ex)
             {
@@ -266,6 +273,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                     _mapper.Map(jobApplications, jobApplicationsDTO);
                     response.Applications = jobApplicationsDTO;
                     data = response;
+                    retVal = 1;
                 }
 
             }
