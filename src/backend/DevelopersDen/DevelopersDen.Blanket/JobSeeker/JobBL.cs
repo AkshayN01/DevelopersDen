@@ -33,6 +33,7 @@ namespace DevelopersDen.Blanket.JobSeeker
 
             try
             {
+                JobListDTO response = new JobListDTO();
                 //check if the seeker exists or not
                 Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(new Guid(seekerId), true);
                 if (jobSeeker == null) throw new Exception("No Seeker found");
@@ -107,9 +108,12 @@ namespace DevelopersDen.Blanket.JobSeeker
                 // Combine the conditions
                 var combinedCondition = Library.Generic.Utility.CombineConditions<Job>(expressions);
 
-                List<Job> jobs = await _unitOfWork._JobRepository.FilterJobs(combinedCondition, pageNumber, pageSize);
+                List<Job> jobs = await _unitOfWork._JobRepository.FilterJobs(combinedCondition);
                 if(jobs.Any())
                 {
+                    response.TotalCount = jobs.Count;
+                    jobs = jobs.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
                     List<JobDTO> jobDTOs = new List<JobDTO>();
                     foreach(Job job in jobs)
                     {
@@ -124,7 +128,9 @@ namespace DevelopersDen.Blanket.JobSeeker
                         jobDTO.Recruiter = recruiterDTO;
                         jobDTOs.Add(jobDTO);
                     }
-                    data = jobDTOs;
+
+                    response.Jobs = jobDTOs;
+                    data = response;
                 }
 
             }
@@ -235,7 +241,7 @@ namespace DevelopersDen.Blanket.JobSeeker
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
 
-        public async Task<HTTPResponse> GetAllJobApplicationDetails(string seekerId)
+        public async Task<HTTPResponse> GetAllJobApplicationDetails(string seekerId, int pageNumber, int pageSize)
         {
             string message = string.Empty;
             Int32 retVal = -40;
@@ -254,10 +260,12 @@ namespace DevelopersDen.Blanket.JobSeeker
 
                 if (jobApplications.Any())
                 {
+                    JobApplicationListDTO response = new JobApplicationListDTO() { TotalCount = jobApplications.Count };
+                    jobApplications = jobApplications.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
                     List<JobApplicationDTO> jobApplicationsDTO = new List<JobApplicationDTO>();
                     _mapper.Map(jobApplications, jobApplicationsDTO);
-
-                    data = jobApplicationsDTO;
+                    response.Applications = jobApplicationsDTO;
+                    data = response;
                 }
 
             }

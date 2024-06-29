@@ -22,18 +22,16 @@ namespace DevelopersDen.DataAccess.Repositories
             await UpdateAsync(job);
         }
 
-        public async Task<List<Job>> FilterJobs(Expression<Func<Job, bool>> condition, int pageNumber, int pageSize, bool applyPagination = true, bool tracked = false)
+        public async Task<List<Job>> FilterJobs(Expression<Func<Job, bool>> condition, bool tracked = false)
         {
             IQueryable<Job> query = _dbSet;
+
+            query = query.Where(condition);
 
             if (!tracked)
             {
                 query = query.AsNoTracking();
             }
-
-            query = query.Where(condition);
-            if (applyPagination)
-                query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
             return await query.ToListAsync();
         }

@@ -12,13 +12,15 @@ namespace DevelopersDen.DataAccess.UnitOfWork
         private IJobSeekerRepository? jobSeekerRepository;
         private IGenericRepository<JobSeekerProfile>? jobSeekerProfileRepository;
         private IJobApplicationRepository? jobApplicationRepository;
-        private IGenericRepository<ApplicationStatus>? applicationStatusRepository;
         private ISavedJobRepository? savedJobRepository;
 
         private IRecruiterRepository? recruiterRepository;
         private IJobRepository? jobRepository;
         private IRecruiterAccountRepository? recruiterAccountRepository;
         private IGenericRepository<Subscription>? subscriptionRepository;
+
+        private IGenericRepository<ApplicationStatus>? applicationStatusRepository;
+        private IGenericRepository<Stakeholder>? stakeholderepository;
 
         private readonly ApplicationDbContext _context;
         public UnitOfWork(ApplicationDbContext context)
@@ -42,6 +44,7 @@ namespace DevelopersDen.DataAccess.UnitOfWork
         public IRecruiterAccountRepository _RecruiterAccountRepository => recruiterAccountRepository ??= new RecruiterAccountRepository(_context);
 
         public IGenericRepository<Subscription> _SubscriptionRepository => subscriptionRepository ??= new GenericRepository<Subscription>(_context);
+        public IGenericRepository<Stakeholder> _StakeholderRepository => stakeholderepository ??= new GenericRepository<Stakeholder>(_context);
 
         public void Commit()
         {

@@ -26,6 +26,8 @@ namespace DevelopersDen.Interfaces.Repository
 
         #endregion
 
+        IGenericRepository<Stakeholder> _StakeholderRepository { get; }
+
         void Commit();
         void Rollback();
     }
