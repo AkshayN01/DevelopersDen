@@ -19,7 +19,10 @@ services:
       context: ../DevelopersDen
       dockerfile: ./DevelopersDen.API/Dockerfile
     expose:
-      - "80"
+      - "8080"
+      - "8081"
+    volumes:
+      - /home/akshayn/DevelopersDen/:/https:ro
     depends_on:
       - developersden.database
     networks:
