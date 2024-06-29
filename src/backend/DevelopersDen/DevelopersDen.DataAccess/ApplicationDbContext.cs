@@ -5,6 +5,8 @@ using DevelopersDen.Contracts.DBModels.Recruiter;
 using DevelopersDen.DataAccess.Data.Recruiter;
 using DevelopersDen.DataAccess.Data.Shared;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace DevelopersDen.DataAccess
 {
@@ -100,6 +102,10 @@ namespace DevelopersDen.DataAccess
 
             modelBuilder.Entity<JobSeekerProfile>()
                 .Property(p => p.KeySkills)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
+                    v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                )
                 .HasColumnType("jsonb")
                 .IsRequired();
 
