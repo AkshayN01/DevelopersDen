@@ -7,6 +7,7 @@ using DevelopersDen.Library.Services.Seeker;
 using DevelopersDen.Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using DevelopersDen.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,10 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.OperationFilter<SwaggerFileOperationFilter>();
+});
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
