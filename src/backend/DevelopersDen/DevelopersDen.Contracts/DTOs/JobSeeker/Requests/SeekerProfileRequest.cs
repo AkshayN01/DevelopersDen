@@ -6,13 +6,16 @@ namespace DevelopersDen.Contracts.DTOs.JobSeeker.Requests
     {
         [Required]
         public byte[] Resume { get; set; }
-        public List<WorkExperienceDTO> WorkExperience { get; set; } = new List<WorkExperienceDTO>();
+        public string Summary { get; set; }
+        public List<WorkExperienceRequestDTO> WorkExperience { get; set; } = new List<WorkExperienceRequestDTO>();
         public List<string> KeySkills { get; set; } = new List<string>();
     }
-    public class WorkExperienceDTO
+    public class WorkExperienceRequestDTO
     {
         [Required]
         public string CompanyName { get; set; }
+        [Required]
+        public string Designation { get; set; }
         [Required]
         public string WorkDescription { get; set; }
         [Required]

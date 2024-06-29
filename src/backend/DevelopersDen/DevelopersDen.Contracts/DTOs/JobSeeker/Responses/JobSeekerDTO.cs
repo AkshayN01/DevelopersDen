@@ -9,6 +9,7 @@ namespace DevelopersDen.Contracts.DTOs.JobSeeker.Responses
         public string Name { get; set; } = string.Empty;
         public string EmailId { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
+        public string GoogleId { get; set; } = string.Empty;
         public JobSeekerProfileDTO JobSeekerProfile { get; set; }
     }
 
