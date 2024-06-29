@@ -53,7 +53,6 @@ namespace DevelopersDen.Library.Profiles
 
             CreateMap<SeekerProfileRequest, JobSeekerProfile>()
                 .ForMember(dest => dest.KeySkills, src => src.MapFrom(x => x.KeySkills))
-                .ForMember(dest => dest.Resume, src => src.MapFrom(x => x.Resume))
                 .ForMember(dest => dest.Summary, src => src.MapFrom(x => x.Summary));
 
             CreateMap<WorkExperienceRequestDTO, WorkExperience>()
