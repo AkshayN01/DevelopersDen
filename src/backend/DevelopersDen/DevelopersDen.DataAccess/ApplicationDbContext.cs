@@ -111,6 +111,10 @@ namespace DevelopersDen.DataAccess
 
             modelBuilder.Entity<JobSeekerProfile>()
                 .Property(p => p.SearchFilter)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }),
+                    v => JsonSerializer.Deserialize<SearchFilter>(v, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                )
                 .HasColumnType("jsonb")
                 .IsRequired();
 
