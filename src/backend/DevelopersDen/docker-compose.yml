@@ -1,6 +1,14 @@
 version: "3.8"
 
 services:
+  developersden.reverseproxy:
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    expose:
+      - "80:80"
+      - "443:443"
+    restart: always
   developersden.database:
     container_name: developersden.database
     image: postgres
@@ -16,9 +24,8 @@ services:
     build:
       context: ../DevelopersDen
       dockerfile: ./DevelopersDen.API/Dockerfile
-    ports:
-      - "8080:8080"
-      - "8081:8081"
+    expose:
+      - "80"
     depends_on:
       - developersden.database
   developersden.web:
@@ -27,8 +34,20 @@ services:
     build:
      context: ./DevelopersDen.Client
      dockerfile: ./Dockerfile
-    ports:
-      - '8082:80'
-      - '8084:443'
+    expose:
+      - '80'
     depends_on:
       - developersden.api
+  developersden.nginx:
+    image: nginx:latest
+    container_name: developersden.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs/fullchain.pem:/etc/ssl/certs/fullchain.pem
+      - ./certs/privkey.pem:/etc/ssl/private/privkey.pem
+    depends_on:
+      - developersden.api
+      - developersden.web

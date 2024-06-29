@@ -1,13 +1,12 @@
-FROM node:latest AS build
+# Stage 1: Build the Angular application
+FROM node:14 AS build
 WORKDIR /app
-COPY . /app/
+COPY package*.json ./
 RUN npm install
-RUN npm run build
+COPY . .
+RUN npm run build --prod
 
+# Stage 2: Serve the Angular application using Nginx
 FROM nginx:alpine
-COPY ./config/nginx.conf /etc/nginx/nginx.conf
-COPY /home/akshayn/DevelopersDen/akshaynambly_info_chain.crt /etc/nginx
-COPY /home/akshayn/ssl/server.key /etc/nginx
-COPY --from=build /app/dist/developers-den.client/browser /usr/share/nginx/html
-EXPOSE 80
-EXPOSE 443
+COPY --from=build /app/dist/DevelopersDen.Client /usr/share/nginx/html
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
