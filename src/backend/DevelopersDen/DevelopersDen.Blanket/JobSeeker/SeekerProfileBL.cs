@@ -132,7 +132,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                 JobSeekerProfile jobSeekerProfile = new JobSeekerProfile();
                 _mapper.Map(profileRequest, jobSeekerProfile);
 
-                if (profileRequest != null)
+                if (profileRequest == null)
                     throw new Exception("Invalid data");
 
                 jobSeekerProfile.JobSeekerId = jobSeeker.JobSeekerId;
