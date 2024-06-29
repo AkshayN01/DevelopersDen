@@ -6,6 +6,8 @@ using DevelopersDen.Contracts.Enums;
 using DevelopersDen.Interfaces.Repository;
 using DevelopersDen.Library.Generic;
 using DevelopersDen.Library.Services.Seeker;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevelopersDen.Blanket.JobSeeker
 {
@@ -111,7 +113,7 @@ namespace DevelopersDen.Blanket.JobSeeker
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
         
-        public async Task<HTTPResponse> AddProfile(string seekerGuid, SeekerProfileRequest profileRequest)
+        public async Task<HTTPResponse> AddProfile(string seekerGuid, SeekerProfileRequest profileRequest, IFormFile file)
         {
             string message = string.Empty;
             Int32 retVal = -40;
@@ -136,8 +138,23 @@ namespace DevelopersDen.Blanket.JobSeeker
                 jobSeekerProfile.JobSeekerId = jobSeeker.JobSeekerId;
                 jobSeekerProfile.JobSeekerProfileId = new Guid();
 
+
                 await _unitOfWork._JobSeekerProfileRepository.AddAsync(jobSeekerProfile);
                 _unitOfWork.Commit();
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    var uploadedFile = new JobSeekerResume
+                    {
+                        FileName = file.FileName,
+                        ContentType = file.ContentType,
+                        Data = memoryStream.ToArray(),
+                        JobSeekerProfileId = jobSeekerProfile.JobSeekerProfileId
+                    };
+
+                    await _unitOfWork._JobSeekerResumeRepository.AddAsync(uploadedFile);
+                    _unitOfWork.Commit();
+                }
                 data = jobSeekerProfile;
                 retVal = 1;
             }
@@ -148,8 +165,7 @@ namespace DevelopersDen.Blanket.JobSeeker
 
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
-        
-        public async Task<HTTPResponse> UpdateProfile(string seekerGuid, SeekerProfileRequest profileRequest)
+        public async Task<HTTPResponse> GetProfile(string seekerGuid)
         {
             string message = string.Empty;
             Int32 retVal = -40;
@@ -159,14 +175,71 @@ namespace DevelopersDen.Blanket.JobSeeker
             try
             {
                 //check if the seeker exists or not
-                Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(new Guid(seekerGuid));
+                Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(new Guid(seekerGuid), true);
                 if (jobSeeker == null) throw new Exception("No Seeker found");
 
-                JobSeekerProfile jobSeekerProfile = new JobSeekerProfile();
-                _mapper.Map(profileRequest, jobSeekerProfile);
+                if (jobSeeker.JobSeekerProfile == null) //job seeker already has a profile
+                    throw new Exception("No Profile exists");
 
-                if (profileRequest != null)
-                    throw new Exception("Invalid data");
+                JobSeekerProfile jobSeekerProfile = jobSeeker.JobSeekerProfile;
+                jobSeekerProfile.Resume = await _unitOfWork._JobSeekerResumeRepository.GetBySeekerProfileId(jobSeekerProfile.JobSeekerProfileId);
+                data = jobSeekerProfile;
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+
+        public async Task<HTTPResponse> UpdateProfile(string seekerGuid, SeekerProfileRequest profileRequest, IFormFile file)
+        {
+            string message = string.Empty;
+            Int32 retVal = -40;
+
+            Object? data = default(Object);
+
+            try
+            {
+                //check if the seeker exists or not
+                Guid jobSeekerId = new Guid(seekerGuid);
+                Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(jobSeekerId, true);
+                if (jobSeeker == null) throw new Exception("No Seeker found");
+
+                JobSeekerProfile jobSeekerProfile = jobSeeker.JobSeekerProfile;
+                if(jobSeekerProfile == null)
+                {
+                    throw new Exception("No profile found");
+                }
+
+                //upload new resume
+                if(file != null && file.Length != 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await file.CopyToAsync(memoryStream);
+                        var uploadedFile = new JobSeekerResume
+                        {
+                            FileName = file.FileName,
+                            ContentType = file.ContentType,
+                            Data = memoryStream.ToArray(),
+                            JobSeekerProfileId = jobSeekerProfile.JobSeekerProfileId
+                        };
+
+                        await _unitOfWork._JobSeekerResumeRepository.AddAsync(uploadedFile);
+                    }
+                }
+
+                if (profileRequest.WorkExperience.Any())
+                    _mapper.Map(profileRequest.WorkExperience, jobSeekerProfile.WorkExperience);
+
+                if(profileRequest.KeySkills.Any())
+                    jobSeekerProfile.KeySkills = profileRequest.KeySkills;
+
+                if(!String.IsNullOrEmpty(profileRequest.Summary))
+                    jobSeekerProfile.Summary = profileRequest.Summary;
 
                 await _unitOfWork._JobSeekerProfileRepository.UpdateAsync(jobSeekerProfile);
                 _unitOfWork.Commit();

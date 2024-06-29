@@ -13,6 +13,7 @@ namespace DevelopersDen.Interfaces.Repository
         IGenericRepository<JobSeekerProfile> _JobSeekerProfileRepository { get; }
         IJobApplicationRepository _JobApplicationRepository { get; }
         IGenericRepository<ApplicationStatus> _ApplicationStatusRepository { get; }
+        IJobSeekerResumerRepository _JobSeekerResumeRepository { get; }
         ISavedJobRepository _SavedJobRepository { get; }
 
         #endregion

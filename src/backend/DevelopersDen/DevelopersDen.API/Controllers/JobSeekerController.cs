@@ -56,13 +56,13 @@ namespace DevelopersDen.API.Controllers
 
         [HttpPost]
         [Route("/api/jobseeker/{userguid}/add-profile")]
-        public async Task<IActionResult> JobSeekerAddProfile(string userguid, [FromBody] SeekerProfileRequest profileRequest)
+        public async Task<IActionResult> JobSeekerAddProfile(string userguid, [FromBody] SeekerProfileRequest profileRequest, [FromForm]IFormFile file)
         {
-            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+            if (!ModelState.IsValid || file == null || file.Length == 0) { return BadRequest(ModelState); };
 
             try
             {
-                var httpResponse = await _JobSeekerBlanket.AddProfile(userguid, profileRequest);
+                var httpResponse = await _JobSeekerBlanket.AddProfile(userguid, profileRequest, file);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -73,13 +73,30 @@ namespace DevelopersDen.API.Controllers
 
         [HttpPut]
         [Route("/api/jobseeker/{userguid}/update-profile")]
-        public async Task<IActionResult> JobSeekerUpdateProfile(string userguid, [FromBody] SeekerProfileRequest profileRequest)
+        public async Task<IActionResult> JobSeekerUpdateProfile(string userguid, [FromBody] SeekerProfileRequest profileRequest, [FromForm] IFormFile file)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
 
             try
             {
-                var httpResponse = await _JobSeekerBlanket.UpdateProfile(userguid, profileRequest);
+                var httpResponse = await _JobSeekerBlanket.UpdateProfile(userguid, profileRequest, file);
+                return Ok(httpResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/api/jobseeker/{userguid}/get-profile")]
+        public async Task<IActionResult> JobSeekerGetProfile(string userguid)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+
+            try
+            {
+                var httpResponse = await _JobSeekerBlanket.GetProfile(userguid);
                 return Ok(httpResponse);
             }
             catch (Exception ex)

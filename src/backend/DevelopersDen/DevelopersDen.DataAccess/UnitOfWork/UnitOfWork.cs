@@ -11,6 +11,7 @@ namespace DevelopersDen.DataAccess.UnitOfWork
     {
         private IJobSeekerRepository? jobSeekerRepository;
         private IGenericRepository<JobSeekerProfile>? jobSeekerProfileRepository;
+        private IJobSeekerResumerRepository? jobSeekerResumeRepository;
         private IJobApplicationRepository? jobApplicationRepository;
         private ISavedJobRepository? savedJobRepository;
 
@@ -30,6 +31,7 @@ namespace DevelopersDen.DataAccess.UnitOfWork
         public IJobSeekerRepository _JobSeekerRepository => jobSeekerRepository ??= new JobSeekerRepository(_context);
 
         public IGenericRepository<JobSeekerProfile> _JobSeekerProfileRepository => jobSeekerProfileRepository ??= new GenericRepository<JobSeekerProfile>(_context);
+        public IJobSeekerResumerRepository _JobSeekerResumeRepository => jobSeekerResumeRepository ??= new JobSeekerResumerRepository(_context);
 
         public IJobApplicationRepository _JobApplicationRepository => jobApplicationRepository ??= new JobApplicationRepository(_context);
 

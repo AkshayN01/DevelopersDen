@@ -8,8 +8,7 @@ namespace DevelopersDen.Contracts.DBModels.JobSeeker
         public Guid JobSeekerProfileId { get; set; }
         [Required]
         public String Summary { get; set; }
-        [Required]
-        public byte[] Resume {  get; set; }
+        public JobSeekerResume Resume {  get; set; }
         public List<WorkExperience>? WorkExperience { get; set; } = new List<WorkExperience>();
         public List<string>? KeySkills { get; set; } = new List<string>();
         public SearchFilter? SearchFilter { get; set; } = new SearchFilter();
@@ -17,6 +16,15 @@ namespace DevelopersDen.Contracts.DBModels.JobSeeker
         public JobSeeker JobSeeker { get; set; } = null!;
     }
 
+    public class JobSeekerResume
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; }
+        public string ContentType { get; set; }
+        public byte[] Data { get; set; }
+        public Guid JobSeekerProfileId { get; set; }
+        public JobSeekerProfile JobSeekerProfile { get; set; }
+    }
     public class WorkExperience
     {
         [Required]

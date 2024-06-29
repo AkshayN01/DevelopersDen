@@ -14,6 +14,7 @@ namespace DevelopersDen.DataAccess
         public DbSet<Stakeholder> Stakeholders { get; set; }
         public DbSet<JobSeeker> JobSeekers { get; set; }
         public DbSet<JobSeekerProfile> JobSeekersProfiles { get; set; }
+        public DbSet<JobSeekerResume> JobSeekersResumes { get; set; }
         public DbSet<Recruiter> Recruiters { get; set; }
         public DbSet<RecruiterAccount> RecruiterAccounts { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
@@ -67,6 +68,12 @@ namespace DevelopersDen.DataAccess
                 .HasOne(e => e.JobSeekerProfile)
                 .WithOne(e => e.JobSeeker)
                 .HasForeignKey<JobSeekerProfile>(e => e.JobSeekerId)
+                .IsRequired();
+
+            modelBuilder.Entity<JobSeekerProfile>()
+                .HasOne(e => e.Resume)
+                .WithOne(e => e.JobSeekerProfile)
+                .HasForeignKey<JobSeekerResume>(e => e.JobSeekerProfileId)
                 .IsRequired();
 
             modelBuilder.Entity<JobApplication>()
