@@ -100,7 +100,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                 await _unitOfWork._JobSeekerRepository.AddAsync(jobSeeker);
                 _unitOfWork.Commit();
 
-                data = true;
+                data = jobSeeker;
                 retVal = 1;
             }
             catch (Exception ex)
@@ -138,6 +138,7 @@ namespace DevelopersDen.Blanket.JobSeeker
 
                 await _unitOfWork._JobSeekerProfileRepository.AddAsync(jobSeekerProfile);
                 _unitOfWork.Commit();
+                data = jobSeekerProfile;
                 retVal = 1;
             }
             catch (Exception ex)
