@@ -10,13 +10,9 @@ namespace DevelopersDen.DataAccess.Repositories
         {
         }
 
-        public async Task<JobSeeker?> Login(string emailId, string googleId)
+        public async Task<JobSeeker?> Login(string emailId)
         {
-            if (googleId == null)
-                return await _dbSet.FirstOrDefaultAsync(x => x.Email == emailId);
-            else
-                return await _dbSet.FirstOrDefaultAsync(x => x.Email == emailId && x.GoogleId == googleId);
-
+            return await _dbSet.FirstOrDefaultAsync(x => x.Email == emailId);
         }
 
         public async Task<JobSeeker?> GetSeekerDetailsAsync(Guid seekerId)

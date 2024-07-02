@@ -70,13 +70,19 @@ namespace DevelopersDen.Library.Profiles
                 .ForMember(dest => dest.StartDate, src => src.MapFrom(x => x.StartDate))
                 .ForMember(dest => dest.EndDate, src => src.MapFrom(x => x.EndDate))
                 .ForMember(dest => dest.WorkDescription, src => src.MapFrom(x => x.WorkDescription))
-                .ForMember(dest => dest.IsCurrent, src => src.MapFrom(x => x.IsCurrent));
+                .ForMember(dest => dest.IsCurrent, src => src.MapFrom(x =>  Convert.ToBoolean(x.IsCurrent)));
 
             CreateMap<JobSeekerResgisterRequest, JobSeeker>()
                 .ForMember(dest => dest.Email, src => src.MapFrom(x => x.Email))
                 .ForMember(dest => dest.PhoneNumber, src => src.MapFrom(x => x.PhoneNumber))
                 .ForMember(dest => dest.Name, src => src.MapFrom(x => x.Name))
                 .ForMember(dest => dest.GoogleId, src => src.MapFrom(x => x.GoogleId));
+
+            CreateMap<JobSearchFilterDTO, SearchFilter>()
+                .ForMember(dest => dest.CompanyName, src => src.MapFrom(x => x.CompanyName))
+                .ForMember(dest => dest.KeySkills, src => src.MapFrom(x => x.KeySkills))
+                .ForMember(dest => dest.JobType, src => src.MapFrom(x => x.JobType))
+                .ForMember(dest => dest.Location, src => src.MapFrom(x => x.Location));
 
             #endregion
         }

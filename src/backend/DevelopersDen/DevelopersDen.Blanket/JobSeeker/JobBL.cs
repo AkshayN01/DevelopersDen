@@ -53,9 +53,9 @@ namespace DevelopersDen.Blanket.JobSeeker
                 if (jobSearchFilter != null)
                 {
 
-                    if (String.IsNullOrEmpty(jobSearchFilter.CompanyName))
+                    if (!String.IsNullOrEmpty(jobSearchFilter.CompanyName))
                     {
-                        List<Guid> companyIds = await _unitOfWork._RecruiterRepository.GetRecruiterIdByName(jobSearchFilter.CompanyName);
+                        List<Guid> companyIds = await _unitOfWork._RecruiterRepository.GetRecruiterIdByName(jobSearchFilter.CompanyName.ToLower());
                         if (companyIds.Any())
                         {
                             Expression<Func<Job, bool>> expression = x => companyIds.Contains(x.RecruiterId);
@@ -63,9 +63,9 @@ namespace DevelopersDen.Blanket.JobSeeker
                         }
                     }
 
-                    if(String.IsNullOrEmpty(jobSearchFilter.Location))
+                    if(!String.IsNullOrEmpty(jobSearchFilter.Location))
                     {
-                        Expression<Func<Job, bool>> expression = x => x.Location.Contains(jobSearchFilter.Location);
+                        Expression<Func<Job, bool>> expression = x => x.Location.ToLower().Contains(jobSearchFilter.Location.ToLower());
                         expressions.Add(expression);
                     }
 
@@ -76,18 +76,24 @@ namespace DevelopersDen.Blanket.JobSeeker
                         expressions.Add(expression);
                     }
 
-                    if (jobSearchFilter.KeySkills.Any())
+                    if (jobSearchFilter.KeySkills != null && jobSearchFilter.KeySkills.Any())
                     {
-                        Expression<Func<Job, bool>> expression = x => x.KeySkills.Any(y => jobSearchFilter.KeySkills.Contains(y));
-                        expressions.Add(expression);
+                        foreach(string skill in jobSearchFilter.KeySkills)
+                        {
+                            Expression<Func<Job, bool>> expression = x => x.KeySkills.Any(y => y.Contains(skill));
+                            expressions.Add(expression);
+                        }
                     }
                 }
                 else
                 {
-                    if (jobSeeker.JobSeekerProfile != null && jobSeeker.JobSeekerProfile.KeySkills.Any())
+                    if (jobSeeker.JobSeekerProfile != null && jobSeeker.JobSeekerProfile.KeySkills != null && jobSeeker.JobSeekerProfile.KeySkills.Any())
                     {
-                        Expression<Func<Job, bool>> expression = x => x.KeySkills.Any(y => jobSeeker.JobSeekerProfile.KeySkills.Contains(y));
-                        expressions.Add(expression);
+                        foreach (string skill in jobSeeker.JobSeekerProfile.KeySkills)
+                        {
+                            Expression<Func<Job, bool>> expression = x => x.KeySkills.Any(y => y.Contains(skill));
+                            expressions.Add(expression);
+                        }
                     }
                 }
 
@@ -143,7 +149,7 @@ namespace DevelopersDen.Blanket.JobSeeker
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
 
-        public async Task<HTTPResponse> UpdateJobApplication(string seekerId, string jobId, int status)
+        public async Task<HTTPResponse> AddJobApplication(string seekerId, string jobId, int status)
         {
             string message = string.Empty;
             Int32 retVal = -40;
@@ -188,6 +194,50 @@ namespace DevelopersDen.Blanket.JobSeeker
                         JobApplicationId = new Guid()
                     };
                     await _unitOfWork._JobApplicationRepository.AddAsync(jobApplication);
+                    _unitOfWork.Commit();
+                }
+                else
+                {
+                    throw new Exception("Invalid status");
+                }
+
+                data = true;
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+        public async Task<HTTPResponse> UpdateJobApplication(string seekerId, string jobApplicationId, int status)
+        {
+            string message = string.Empty;
+            Int32 retVal = -40;
+
+            Object? data = default(Object);
+
+            try
+            {
+                Guid SeekerGuid = new Guid(seekerId);
+                Guid JobApplicationGuid = new Guid(jobApplicationId);
+
+                //check if seeker exists or not
+                Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(SeekerGuid, true);
+                if (jobSeeker == null) throw new Exception("No Seeker found");
+
+                //check if job exists or not
+                JobApplication application = await _unitOfWork._JobApplicationRepository.GetByGuidAsync(JobApplicationGuid);
+                if (application == null) throw new Exception("No job application found");
+
+                if (application.ApplicationStatusId == (int)ApplicationStatusEnum.Declined)
+                    throw new Exception("Application was already declined");
+
+                if (status == (int)ApplicationStatusEnum.Canceled)
+                {
+                    application.ApplicationStatusId = (int)ApplicationStatusEnum.Canceled;
+                    await _unitOfWork._JobApplicationRepository.UpdateAsync(application);
                     _unitOfWork.Commit();
                 }
                 else
@@ -263,7 +313,7 @@ namespace DevelopersDen.Blanket.JobSeeker
                 Contracts.DBModels.JobSeeker.JobSeeker? jobSeeker = await _jobSeekerService.GetJobSeekerDetails(SeekerGuid, true);
                 if (jobSeeker == null) throw new Exception("No Seeker found");
 
-                List<JobApplication> jobApplications = _unitOfWork._JobApplicationRepository.GetAllByJobSeekerId(SeekerGuid).ToList();
+                List<JobApplication> jobApplications = _unitOfWork._JobApplicationRepository.GetAllByJobSeekerId(SeekerGuid, true).ToList();
 
                 if (jobApplications.Any())
                 {

@@ -2,11 +2,13 @@
 using DevelopersDen.Contracts.DTOs.JobSeeker.Requests;
 using DevelopersDen.Interfaces.Repository;
 using DevelopersDen.Library.Services.Seeker;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevelopersDen.API.Controllers
 {
+    [Authorize]
     [ApiController]
     public class JobController : ControllerBase
     {
@@ -20,13 +22,15 @@ namespace DevelopersDen.API.Controllers
             _JobSeekerBlanket = new Blanket.JobSeeker.JobBL(unitOfWork, jobSeekerService, mapper);
         }
 
-        [HttpGet]
-        [Route("/api/jobseeker/{userguid}/get-jobs")]
-        public async Task<IActionResult> GetAllJobs(string userguid, [FromBody]JobSearchFilterDTO searchFilterDTO, int pageNumber, int pageSize)
+        [HttpPost]
+        [Route("/api/jobseeker/get-jobs")]
+        public async Task<IActionResult> GetAllJobs([FromBody]JobSearchFilterDTO searchFilterDTO, int pageNumber, int pageSize)
         {
             if(!ModelState.IsValid) { return BadRequest(ModelState); }
 
-
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if(userguid == null) {  return Unauthorized(); }
             try
             {
                 var httpResponse = await _JobSeekerBlanket.GetJobs(userguid, searchFilterDTO, pageNumber, pageSize);
@@ -39,11 +43,14 @@ namespace DevelopersDen.API.Controllers
         }
 
         [HttpGet]
-        [Route("/api/jobseeker/{userguid}/get-all-job-applications")]
-        public async Task<IActionResult> GetAllJobApplication(string userguid, int pageNumber, int pageSize)
+        [Route("/api/jobseeker/get-all-job-applications")]
+        public async Task<IActionResult> GetAllJobApplication(int pageNumber, int pageSize)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if (userguid == null) { return Unauthorized(); }
 
             try
             {
@@ -56,11 +63,14 @@ namespace DevelopersDen.API.Controllers
             }
         }
         [HttpGet]
-        [Route("/api/jobseeker/{userguid}/get-job-application/{jobApplicationId}")]
-        public async Task<IActionResult> GetJobApplicationDetails(string userguid, string jobApplicationId)
+        [Route("/api/jobseeker/get-job-application/{jobApplicationId}")]
+        public async Task<IActionResult> GetJobApplicationDetails(string jobApplicationId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if (userguid == null) { return Unauthorized(); }
 
             try
             {
@@ -74,15 +84,39 @@ namespace DevelopersDen.API.Controllers
         }
 
         [HttpPost]
-        [Route("/api/jobseeker/{userguid}/edit-job-application/{jobId}")]
-        public async Task<IActionResult> EditApplicationDetails(string userguid, string jobId, int status)
+        [Route("/api/jobseeker/add-job-application/{jobId}")]
+        public async Task<IActionResult> AddApplicationDetails(string jobId, int status)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if (userguid == null) { return Unauthorized(); }
 
             try
             {
-                var httpResponse = await _JobSeekerBlanket.UpdateJobApplication(userguid, jobId, status);
+                var httpResponse = await _JobSeekerBlanket.AddJobApplication(userguid, jobId, status);
+                return Ok(httpResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("/api/jobseeker/edit-job-application/{jobApplicationId}")]
+        public async Task<IActionResult> EditApplicationDetails(string jobApplicationId, int status)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if (userguid == null) { return Unauthorized(); }
+
+            try
+            {
+                var httpResponse = await _JobSeekerBlanket.UpdateJobApplication(userguid, jobApplicationId, status);
                 return Ok(httpResponse);
             }
             catch (Exception ex)

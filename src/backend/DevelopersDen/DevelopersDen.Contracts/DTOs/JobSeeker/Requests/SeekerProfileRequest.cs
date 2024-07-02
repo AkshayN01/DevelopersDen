@@ -5,10 +5,10 @@ namespace DevelopersDen.Contracts.DTOs.JobSeeker.Requests
 {
     public class SeekerProfileRequest
     {
-        public IFormFile Resume {  get; set; }
-        public string Summary { get; set; }
-        public List<WorkExperienceRequestDTO> WorkExperience { get; set; } = new List<WorkExperienceRequestDTO>();
-        public List<string> KeySkills { get; set; } = new List<string>();
+        public IFormFile? Resume {  get; set; }
+        public string? Summary { get; set; }
+        public List<WorkExperienceRequestDTO>? WorkExperience { get; set; }
+        public List<string>? KeySkills { get; set; }
     }
     public class WorkExperienceRequestDTO
     {
@@ -21,6 +21,6 @@ namespace DevelopersDen.Contracts.DTOs.JobSeeker.Requests
         [Required]
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public int IsCurrent { get; set; }
+        public string IsCurrent { get; set; }
     }
 }

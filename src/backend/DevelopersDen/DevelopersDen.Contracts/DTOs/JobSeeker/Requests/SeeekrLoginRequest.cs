@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace DevelopersDen.Contracts.DTOs.JobSeeker.Requests
 {
-    public class LoginRequest
+    public class SeeekrLoginRequest
     {
         [Required]
         public string Email { get; set; }
         public string Password { get; set; }
-        public string GoogleId { get; set; }
-        public string Name { get; set; }
+        public string? GoogleId { get; set; }
+        public string? Name { get; set; }
     }
 }

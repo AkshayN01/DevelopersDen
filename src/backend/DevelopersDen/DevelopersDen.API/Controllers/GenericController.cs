@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using DevelopersDen.Contracts.DBModels;
 using DevelopersDen.Contracts.DTOs.JobSeeker.Requests;
+using DevelopersDen.Contracts.Enums;
+using DevelopersDen.DataAccess.Data.Recruiter;
 using DevelopersDen.Interfaces.Repository;
 using DevelopersDen.Library.Services.Seeker;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevelopersDen.API.Controllers
@@ -45,6 +49,24 @@ namespace DevelopersDen.API.Controllers
             try
             {
                 var httpResponse = await _GenericBlanket.GetApplicationStatuses();
+                return Ok(httpResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/api/get-job-types")]
+        public async Task<IActionResult> GetAllJobTypes()
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            try
+            {
+                var httpResponse = _GenericBlanket.GetJobTypes();
                 return Ok(httpResponse);
             }
             catch (Exception ex)

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using DevelopersDen.Contracts.DTOs;
+using DevelopersDen.Contracts.Enums;
+using DevelopersDen.DataAccess.Data.Recruiter;
 using DevelopersDen.Interfaces.Repository;
 using DevelopersDen.Library.Services.Seeker;
 using System;
@@ -52,6 +54,26 @@ namespace DevelopersDen.Blanket.Generic
             {
                 //check if seeker exists or not
                 data = await _unitOfWork._ApplicationStatusRepository.GetAllAsync();
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+        public HTTPResponse GetJobTypes()
+        {
+            string message = string.Empty;
+            Int32 retVal = -40;
+
+            Object? data = default(Object);
+
+            try
+            {
+                data = Enum.GetValues(typeof(JobTypeEnum)).Cast<JobTypeEnum>()
+                .Select(x => new JobType() { Id = (int)x, Name = x.ToString() }).ToList();
                 retVal = 1;
             }
             catch (Exception ex)

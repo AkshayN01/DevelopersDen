@@ -4,6 +4,12 @@ using System.Text.Json.Serialization;
 
 namespace DevelopersDen.Contracts.DTOs.JobSeeker.Responses
 {
+    public class LoginResponse
+    {
+        public String Token { get; set; }
+        public String Name {  get; set; }
+        public bool HasProfile { get; set; } = false;
+    }
     public class JobSeekerDTO
     {
         public Guid Guid { get; set; }

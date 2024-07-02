@@ -11,8 +11,8 @@ namespace DevelopersDen.DataAccess.Data.Recruiter
 {
     public class JobType
     {
-        public int JobTypeId { get; set; }
-        public string JobTypeName { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
     public static class JobData
     {
@@ -38,7 +38,7 @@ namespace DevelopersDen.DataAccess.Data.Recruiter
         private static readonly List<String> JobDesignation = new List<string>() { "Senior", "Associate", "Junior", "Mid Level" };
 
         private static readonly List<JobType> jobTypes = Enum.GetValues(typeof(JobTypeEnum)).Cast<JobTypeEnum>()
-            .Select(x => new JobType() { JobTypeId = (int)x, JobTypeName = x.ToString() }).ToList();
+            .Select(x => new JobType() { Id = (int)x, Name = x.ToString() }).ToList();
         public static List<Job> GetJobs()
         {
             if(Jobs == null)
@@ -90,7 +90,7 @@ namespace DevelopersDen.DataAccess.Data.Recruiter
         {
             Random random = new Random();
             int randomIndex = random.Next(jobTypes.Count);
-            return jobTypes[randomIndex].JobTypeId;
+            return jobTypes[randomIndex].Id;
         }
         private static int GetRandomExperience()
         {

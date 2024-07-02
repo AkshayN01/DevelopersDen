@@ -15,10 +15,10 @@ namespace DevelopersDen.DataAccess.Repositories
         public JobSeekerResumerRepository(ApplicationDbContext context) : base(context)
         {
         }
-
+         
         public async Task<JobSeekerResume?> GetBySeekerProfileId(Guid seekerProfileId)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.JobSeekerProfileId == seekerProfileId);
+            return await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.JobSeekerProfileId == seekerProfileId);
         }
     }
 }

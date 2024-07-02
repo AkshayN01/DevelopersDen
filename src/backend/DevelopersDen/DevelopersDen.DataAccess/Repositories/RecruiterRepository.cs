@@ -13,7 +13,7 @@ namespace DevelopersDen.DataAccess.Repositories
         public async Task<List<Guid>> GetRecruiterIdByName(string name)
         {
             return await _dbSet
-                .Where(x => x.CompanyName.StartsWith(name) || x.CompanyName.Contains(name))
+                .Where(x => x.CompanyName.ToLower().Contains(name))
                 .Select(x => x.RecruiterId).ToListAsync();
         }
     }

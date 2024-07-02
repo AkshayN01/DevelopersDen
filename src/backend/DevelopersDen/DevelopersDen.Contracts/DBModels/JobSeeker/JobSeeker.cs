@@ -14,7 +14,7 @@ namespace DevelopersDen.Contracts.DBModels.JobSeeker
         public string? PasswordHash { get; set; } //can be null if google user
         [Required(ErrorMessage = "EmailId is required")]
         public string Email { get; set; } = string.Empty;
-        public string PhoneNumber { get; set; } = string.Empty;
+        public string? PhoneNumber { get; set; }
         public string? GoogleId { get; set; } //can be null for non-google users
         public string? ProfilePictureUrl { get; set; }
         public DateTime? LastLogin { get; set; }
