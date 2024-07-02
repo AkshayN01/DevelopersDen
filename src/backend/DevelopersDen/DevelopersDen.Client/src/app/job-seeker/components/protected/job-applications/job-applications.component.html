@@ -1,1 +1,49 @@
-<p>job-applications works!</p>
+<div class="spinner-container" *ngIf="!hasDataLoaded">
+    <mat-spinner></mat-spinner>
+</div>
+<section *ngIf="hasDataLoaded" class="content-container">
+    <div class="column list-column" *ngIf="jobs != undefined">
+        <div class="list-content">
+            <mat-card [ngClass]="{'cancelled-application': app.applicationStatusId == 2}" matRipple style="margin-bottom: 1em;max-width: 55em;" *ngFor="let app of jobs.applications" (click)="viewInfo(app)">
+                <mat-card-header>
+                    <mat-card-title>{{app.job.jobTitle}}</mat-card-title>
+                    <mat-card-subtitle>
+                        <mat-icon aria-hidden="false" fontIcon="location_on"></mat-icon><span class="icon-label">{{app.job.location}}</span>
+                        <mat-icon aria-hidden="false" fontIcon="work_history"></mat-icon><span class="icon-label">{{app.job.minExperience}}</span>
+                        <mat-icon aria-hidden="false" fontIcon="work"></mat-icon><span class="icon-label">{{this.getJobTypeName(app.job.jobType)}}</span>
+                    </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p class="job-description-truncated">{{app.job.jobDescription}}</p>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <div *ngIf="jobs != undefined">
+            <mat-paginator [length]="jobs.totalCount" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+    <div class="column detail-column">
+        <mat-card *ngIf="isSelected">
+            <mat-card-header>
+                <mat-card-title>{{selectedJob.job.jobTitle}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <p><strong>Comments:</strong> {{selectedJob.comments}}</p>
+                <p><strong>Application Status:</strong> {{getStatusName(selectedJob.applicationStatusId)}}</p>
+                <h2>{{this.getJobTypeName(selectedJob.job.jobType)}} Job</h2>
+                <p><strong>Description:</strong> {{selectedJob.job.jobDescription}}</p>
+                <p><strong>Experience Required:</strong> {{selectedJob.job.minExperience}} years</p>
+                <p><strong>Skills:</strong> <span *ngFor="let skill of selectedJob.job.keySkills; let last = last">
+                    {{ skill }}<span *ngIf="!last">, </span>
+                  </span></p>
+                <p><strong>Location:</strong> {{selectedJob.job.location}} </p>
+                <p><strong>Posted On:</strong> {{selectedJob.job.postedDate}}</p>
+                <button *ngIf="!selectedJob.hasCanceled" mat-raised-button color="warn" (click)="applyJob()">Cancel Application</button>
+                <button *ngIf="selectedJob.hasCanceled" mat-raised-button color="success"><mat-icon>check</mat-icon>Cancelled Application</button>
+            </mat-card-content>
+        </mat-card>
+            
+    </div>
+</section>

@@ -1,0 +1,78 @@
+
+.flex-container {
+    display: flex;
+    height: 7em;
+    align-items: stretch;
+}
+  
+.flex-container > mat-form-field {
+    /* background-color: #f1f1f1; */
+    margin: 10px;
+    /* padding: 20px; */
+    height: 6em;
+}  
+
+.content-container{
+  display: flex;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.column {
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-column {
+  flex: 0 0 65%;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.detail-column {
+  flex: 0 0 35%;
+  margin-left: 10px;
+  overflow-y: auto;
+}
+
+.details {
+  max-height: 100%;
+}
+
+.icon-label{
+  vertical-align: super;
+  margin-right: 1em;
+}
+
+.job-description-truncated{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.spinner-container {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8); /* Optional: to add a white overlay */
+  z-index: 1000; /* Ensure the spinner is above other content */
+}
+h2::first-letter {
+  text-transform: capitalize;
+}
+.cancelled-application{
+    background-color: red;
+    opacity: 0.5;
+}

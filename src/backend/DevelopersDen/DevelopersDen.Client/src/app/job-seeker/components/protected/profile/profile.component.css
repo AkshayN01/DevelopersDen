@@ -10,4 +10,61 @@
 .container button{
     text-align: center;
 }
+
+/* Additional styles to ensure <a> tag gets button-like appearance */
+a.mat-button, a.mat-raised-button, a.mat-flat-button, a.mat-stroked-button, a.mat-icon-button, a.mat-fab, a.mat-mini-fab {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    font-size: 14px;
+    min-height: 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+    outline: none;
+    border: none;
+}
+
+a.mat-raised-button {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+a.mat-button:hover, a.mat-raised-button:hover, a.mat-flat-button:hover, a.mat-stroked-button:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+a.mat-fab, a.mat-mini-fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+a.mat-mini-fab {
+    width: 40px;
+    height: 40px;
+}
+
+a.mat-icon-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 50%;
+    justify-content: center;
+}
+.spinner-container {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.8); /* Optional: to add a white overlay */
+    z-index: 1000; /* Ensure the spinner is above other content */
+}
   

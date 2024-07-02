@@ -1,4 +1,41 @@
-<div class="container">
+
+<div *ngIf="!hasProfileData" class="spinner-container">
+  <mat-spinner></mat-spinner>
+</div>
+
+<div class="container" *ngIf="hasProfileData">
+  <mat-card *ngIf="!isEditing">
+    <mat-card-header>
+      <mat-card-title>Job Seeker Profile</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p><strong>Summary:</strong> {{initialData.summary}}</p>
+  
+      <!-- <h3>Resume</h3>
+      <p><strong>File Name:</strong> {{initialData.resume.fileName}}</p>
+      <p><strong>Content Type:</strong> {{initialData.resume.contentType}}</p> -->
+  
+      <h3>Work Experience</h3>
+      <div *ngFor="let experience of initialData.workExperience">
+        <mat-divider></mat-divider>
+        <p><strong>Company Name:</strong> {{experience.companyName}}</p>
+        <p><strong>Designation:</strong> {{experience.designation}}</p>
+        <p><strong>Work Description:</strong> {{experience.workDescription}}</p>
+        <p><strong>Start Date:</strong> {{experience.startDate | date}}</p>
+        <p><strong>End Date:</strong> {{experience.endDate | date}}</p>
+        <p><strong>Is Current:</strong> {{experience.isCurrent ? 'Yes' : 'No'}}</p>
+      </div>
+  
+      <h3>Key Skills</h3>
+      <div *ngFor="let skill of initialData.keySkills">
+        <mat-chip>{{skill}}</mat-chip>
+      </div>
+      <a style="margin-top: 2em;" [href]="getResumeUrl()" download="{{initialData.resume.fileName}}" class="mat-raised-button">Download Resume</a><br>
+      <button style="margin-top: 2em;" mat-raised-button color="primary" (click)="enableEditing()">Edit Profile</button>
+    </mat-card-content>
+  </mat-card>
+  
+  <div *ngIf="isEditing">
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
     <h2>User Profile</h2>
     
@@ -14,26 +51,16 @@
 
     <mat-form-field class="example-chip-list" style="width: 100%;">
       <mat-label>Key Skills</mat-label>
-      <mat-chip-grid #chipGrid aria-label="Key Skills">
-        @for (skill of skills(); track skill) {
-          <mat-chip-row
-            (removed)="remove(skill)"
-            [editable]="true"
-            (edited)="edit(skill, $event)"
-            [aria-description]="'press enter to edit ' + skill.name"
-          >
-            {{skill.name}}
-            <button matChipRemove [attr.aria-label]="'remove ' + skill.name">
-              <mat-icon>cancel</mat-icon>
-            </button>
-          </mat-chip-row>
-        }
+      <mat-chip-grid #chipGrid aria-label="Key Skills" formArrayName="keySkills">
+        <mat-chip-row *ngFor="let skill of keySkills.controls; let i = index" [removable]="true" (removed)="removeSkill(i)">
+          {{ skill.value }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip-row>
         <input
-          placeholder="Key Skills..."
+          placeholder="New skill..."
           [matChipInputFor]="chipGrid"
           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-          [matChipInputAddOnBlur]="addOnBlur"
-          (matChipInputTokenEnd)="add($event)"
+          (matChipInputTokenEnd)="addSkill($event)"
         />
       </mat-chip-grid>
     </mat-form-field>
@@ -84,6 +111,8 @@
         </div>
       </div>
     </div>
+    <button mat-raised-button color="warn" (click)="cancelEdit()">Cancel</button>
     <button mat-raised-button color="primary" type="submit" [disabled]="!profileForm.valid">Submit</button>
   </form>
+  </div>
 </div>

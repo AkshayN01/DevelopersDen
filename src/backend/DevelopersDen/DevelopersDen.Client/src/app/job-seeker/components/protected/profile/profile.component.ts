@@ -1,9 +1,15 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { KeySkills } from '../home/home.component';
 import { MatChipEditedEvent, MatChipInputEvent } from '@angular/material/chips';
+import { JobSeekerProfileDTO } from '../../../models/response/profile';
+import { ProfileService } from '../../../services/profile/profile.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { GenericService } from '../../../../shared/services/generic/generic.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -11,9 +17,12 @@ import { MatChipEditedEvent, MatChipInputEvent } from '@angular/material/chips';
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent {
+  hasProfileData: boolean = false;
   profileForm: FormGroup;
-  initialData: any;  // This will hold the data to display and edit
+  initialData!: JobSeekerProfileDTO;  // This will hold the data to display and edit
   display: FormControl = new FormControl("", Validators.required);
+  isEditing: boolean = false;
+
 
   //mat-chip
   readonly addOnBlur = true;
@@ -21,60 +30,76 @@ export class ProfileComponent {
   readonly skills = signal<KeySkills[]>([]);
   readonly announcer = inject(LiveAnnouncer);
   
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private profileService: ProfileService, private sanitizer: DomSanitizer, private genericService: GenericService, private http: HttpClient) {
     this.profileForm = this.fb.group({
-      workHistory: this.fb.array([]),
-      resume: [null, Validators.required],
-      keySkills: ['', Validators.required],
-      summary: ['', Validators.required]
+      workHistory: this.fb.array([], this.workHistoryIsCurrentValidator()),
+      resume: [null],
+      keySkills: this.fb.array([]),
+      summary: ['']
     });
   }
 
+  setConditionalValidator() {
+    const conditionalField1 = this.profileForm.get('resume');
+    const conditionalField2 = this.profileForm.get('summary');
+    if (!this.isEditing) {
+      conditionalField1?.setValidators([Validators.required]);
+      conditionalField2?.setValidators([Validators.required]);
+    } else {
+      conditionalField1?.clearValidators();
+      conditionalField2?.clearValidators();
+    }
+    conditionalField1?.updateValueAndValidity();
+    conditionalField2?.updateValueAndValidity();
+  }
+
   ngOnInit(): void {
-    this.initialData = this.getInitialData();
-    this.initializeForm(this.initialData);
+    this.getInitialData();
   }
 
   get workHistory(): FormArray {
     return this.profileForm.get('workHistory') as FormArray;
   }
 
-  getInitialData(): any {
-    // This function will return the initial data. Replace with actual data source.
-    return {
-      workHistory: [
-        {
-          companyName: 'Company A',
-          designation: 'Developer',
-          workDescription: 'Developing applications',
-          startDate: '2020-01-01',
-          endDate: '2022-01-01',
-          isCurrent: false
-        }
-      ],
-      resume: null,
-      keySkills: 'Angular, TypeScript, JavaScript',
-      summary: 'Experienced developer with a background in building applications'
-    };
+  enableEditing = (): void => {
+    this.isEditing = true;
+    console.log("Hit")
+  }
+  getInitialData(): void {
+    this.hasProfileData = false;
+    this.profileService.getProfile().subscribe(data => {
+      this.initialData = data;
+      this.hasProfileData = true;
+      if(data != null){
+        this.initializeForm(this.initialData);
+      }
+    });
   }
 
-  initializeForm(data: any): void {
-    data.workHistory.forEach((work: any) => {
+  initializeForm(data: JobSeekerProfileDTO): void {
+    if(data.workExperience.length != 0){
+    data.workExperience.forEach((work: any) => {
       const workGroup = this.fb.group({
         companyName: [work.companyName, Validators.required],
         designation: [work.designation, Validators.required],
         workDescription: [work.workDescription, Validators.required],
         startDate: [work.startDate, Validators.required],
-        endDate: [work.endDate, Validators.required],
+        endDate: [work.endDate],
         isCurrent: [work.isCurrent]
-      });
+      }, { validators: this.endDateRequiredValidator });
       this.workHistory.push(workGroup);
     });
-
+  }
     this.profileForm.patchValue({
       keySkills: data.keySkills,
-      summary: data.summary
+      summary: data.summary,
+      resume: this.getBlob()
     });
+
+    data.keySkills.forEach(val => {
+      this.skills.update(skills => [...skills, {name: val}]);
+    });
+    console.log(this.profileForm.get('keySkills'))
   }
 
   addWorkHistory(): void {
@@ -89,6 +114,30 @@ export class ProfileComponent {
     this.workHistory.push(workGroup);
   }
 
+  endDateRequiredValidator: ValidatorFn = (control: AbstractControl): { [key: string]: any } | null => {
+    const isCurrent = control.get('isCurrent')?.value;
+    const endDate = control.get('endDate')?.value;
+
+    if (!isCurrent && !endDate) {
+      return { endDateRequired: true };
+    }
+    return null;
+  };
+
+  workHistoryIsCurrentValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const workHistory = control as FormArray;
+      const isCurrentCount = workHistory.controls
+        .filter(group => group.get('isCurrent')?.value)
+        .length;
+
+      if (isCurrentCount > 1) {
+        return { uniqueIsCurrent: true };
+      }
+      return null;
+    };
+  }
+
   removeWorkHistory(index: number): void {
     this.workHistory.removeAt(index);
   }
@@ -101,6 +150,33 @@ export class ProfileComponent {
       resume: file
     });
   }
+
+  get keySkills(): FormArray {
+    return this.profileForm.get('keySkills') as FormArray;
+  }
+
+  addSkill(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our skill
+    if ((value || '').trim()) {
+      this.keySkills.push(this.fb.control(value.trim()));
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  removeSkill(index: number): void {
+    if (index >= 0) {
+      this.keySkills.removeAt(index);
+    }
+  }
+
+
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
 
@@ -111,6 +187,8 @@ export class ProfileComponent {
 
     // Clear the input value
     event.chipInput!.clear();
+
+    console.log(this.skills);
   }
 
   remove(skill: KeySkills): void {
@@ -145,11 +223,97 @@ export class ProfileComponent {
       return skills;
     });
   }
-  
+
+  getResumeUrl(): SafeUrl {
+    const blob = this.getBlob();
+    const url = window.URL.createObjectURL(blob);
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
+
+  getBlob(): Blob{
+    // var data = this.initialData.resume.data;
+    const byteCharacters = atob(this.initialData.resume.data); // Decode base64 to binary
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: this.initialData.resume.contentType });
+  }
+  downloadFile() {
+
+    this.profileService.downloadFile().subscribe(blob => {
+      console.log(blob);  
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'downloadedFile.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, error => {
+      console.error('Download error:', error);
+    });
+  }
+
+  cancelEdit(){
+    this.isEditing = false;
+  }
+
   onSubmit(): void {
     if (this.profileForm.valid) {
       console.log(this.profileForm.value);
       // Handle form submission logic, such as sending data to the server
+      this.constructRequestData();
+      // this.profileService.saveProfile(requestBody).subscribe(data => {
+      //   console.log(data);
+      // })
     }
+  }
+
+  constructRequestData(): void{
+
+    const formData = new FormData();
+
+    //resume
+    formData.append('resume', this.profileForm.get('resume')?.value);
+
+    //summary
+    formData.append('summary', this.profileForm.get('summary')?.value)
+
+    //key skills
+    formData.append('keySkills', this.profileForm.get('keySkills')?.value)
+
+    //work history
+    var workHistoryData = this.profileForm.get('workHistory')?.value;
+
+    workHistoryData.forEach((item:any, index:number) => {
+      formData.append(`workExperience[${index}].companyName`, item.companyName);
+      formData.append(`workExperience[${index}].designation`, item.designation);
+      formData.append(`workExperience[${index}].workDescription`, item.workDescription);
+      formData.append(`workExperience[${index}].startDate`, this.genericService.convertDate(item.startDate));
+      formData.append(`workExperience[${index}].endDate`, this.genericService.convertDate(item.endDate));
+      formData.append(`workExperience[${index}].isCurrent`, item.isCurrent);
+    });
+    console.log(this.isEditing);
+    if(this.isEditing){
+      this.http.put(environment.jobSeeker.apiUrl+'update-profile', formData).subscribe(response => {
+        if(response == 'true'){
+          this.getInitialData();
+          this.isEditing = false;
+        }
+      }, error => {
+        console.error('Upload error:', error);
+      });
+    }
+    else{
+      this.http.post(environment.jobSeeker.apiUrl+'add-profile', formData).subscribe(response => {
+        console.log('Upload successful:', response);
+      }, error => {
+        console.error('Upload error:', error);
+      });
+    }
+    
   }
 }

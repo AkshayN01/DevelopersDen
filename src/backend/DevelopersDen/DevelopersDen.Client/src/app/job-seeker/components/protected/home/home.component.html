@@ -2,7 +2,6 @@
     <mat-card>
         <mat-card-content>
             <mat-grid-list cols="12" rowHeight="6em">
-                <form>
                     <mat-grid-tile [colspan]="5" [rowspan]="1">
                         <mat-form-field class="example-chip-list" style="width: 100%;">
                             <mat-label>Key Skills</mat-label>
@@ -32,171 +31,78 @@
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="2" [rowspan]="1">
                         <mat-form-field>
-                            <input matInput placeholder="Company Name">
+                            <input matInput placeholder="Company Name" [(ngModel)]="companyName">
                         </mat-form-field>
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="2" [rowspan]="1">
                         <mat-form-field>
-                            <input matInput placeholder="Company Name">
+                            <input matInput placeholder="Company Name" [(ngModel)]="location">
                         </mat-form-field>
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="2" [rowspan]="1">
                         <mat-form-field>
                             <mat-label>Select</mat-label>
-                            <mat-select>
-                              <mat-option value="one">First option</mat-option>
-                              <mat-option value="two">Second option</mat-option>
+                            <mat-select (selectionChange)="updateJobtype($event.value)">
+                              <mat-option *ngFor="let jobType of jobTypes" [value]="jobType.id">{{ jobType.name }}</mat-option>
                             </mat-select>
                         </mat-form-field>
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="1" [rowspan]="1">
-                        <button mat-raised-button>Search</button>
+                        <button mat-raised-button color="primary" (click)="searchForJobs()">Search</button>
                     </mat-grid-tile>
-                </form>
             </mat-grid-list>
         </mat-card-content>
     </mat-card>
 </section>
 
-<section class="content-container">
+<div class="spinner-container" *ngIf="!hasDataLoaded">
+    <mat-spinner></mat-spinner>
+</div>
+<section *ngIf="hasDataLoaded" class="content-container">
     <div class="column list-column">
-        <div class="list-content">
-            <mat-card matRipple style="margin-bottom: 1em;">
+        <div class="list-content" *ngIf="jobs != undefined">
+            <mat-card matRipple style="margin-bottom: 1em;max-width: 55em;" *ngFor="let job of jobs.jobs" (click)="viewInfo(job)">
                 <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
+                    <mat-card-title>{{job.jobTitle}}</mat-card-title>
                     <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on"></mat-icon><span class="icon-label">Location</span>
-                        <mat-icon aria-hidden="false" fontIcon="work_history"></mat-icon><span class="icon-label">Min. Experience</span>
-                        <mat-icon aria-hidden="false" fontIcon="work"></mat-icon><span class="icon-label">Job Type</span>
+                        <mat-icon aria-hidden="false" fontIcon="location_on"></mat-icon><span class="icon-label">{{job.location}}</span>
+                        <mat-icon aria-hidden="false" fontIcon="work_history"></mat-icon><span class="icon-label">{{job.minExperience}}</span>
+                        <mat-icon aria-hidden="false" fontIcon="work"></mat-icon><span class="icon-label">{{this.getJobTypeName(job.jobType)}}</span>
                     </mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
-                    <p class="job-description-truncated">tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
-                </mat-card-content>
-            </mat-card>
-            <mat-card matRipple style="margin-bottom: 1em;">
-                <mat-card-header>
-                    <mat-card-title>Job Title</mat-card-title>
-                    <mat-card-subtitle>
-                        <mat-icon aria-hidden="false" fontIcon="location_on">Location</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work_history">Min. Experience</mat-icon>
-                        <mat-icon aria-hidden="false" fontIcon="work">Min. Experience</mat-icon>
-                    </mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>tetskljdb\jkbd\kjbdkl\bsdk\bsdbKJbsk\bsln\bslbx\sbx\ljks...</p>
+                    <p class="job-description-truncated">{{job.jobDescription}}</p>
                 </mat-card-content>
             </mat-card>
         </div>
 
-        <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
-        </mat-paginator>
+        <div *ngIf="jobs != undefined">
+            <mat-paginator [length]="jobs.totalCount" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageChange($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
     </div>
     <div class="column detail-column">
-
+        <mat-card *ngIf="isSelected">
+            <mat-card-header>
+                <mat-card-title>{{selectedJob.jobTitle}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <h2>{{this.getJobTypeName(selectedJob.jobType)}} Job</h2>
+                <p><strong>Description:</strong> {{selectedJob.jobDescription}}</p>
+                <p><strong>Experience Required:</strong> {{selectedJob.minExperience}} years</p>
+                <p><strong>Skills:</strong> <span *ngFor="let skill of selectedJob.keySkills; let last = last">
+                    {{ skill }}<span *ngIf="!last">, </span>
+                  </span></p>
+                <p><strong>Location:</strong> {{selectedJob.location}} </p>
+                <p><strong>Posted On:</strong> {{selectedJob.postedDate}}</p>
+                <button *ngIf="!selectedJob.hasApplied" mat-raised-button color="primary" (click)="applyJob()">Apply</button>
+                <button *ngIf="selectedJob.hasApplied" mat-raised-button color="success"><mat-icon>check</mat-icon>Applied</button>
+                <h3>Recruiter Details</h3>
+                <p><strong>Company:</strong> {{selectedJob.recruiter.companyName}}</p>
+                <p><strong>About Company:</strong>{{selectedJob.recruiter.companyDescription}}</p>
+                <p><strong>Website:</strong> <a target="_blank">{{selectedJob.recruiter.websiteUrl}}</a></p>
+            </mat-card-content>
+        </mat-card>
+            
     </div>
 </section>

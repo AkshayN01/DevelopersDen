@@ -8,6 +8,7 @@ import { ProfileComponent } from './job-seeker/components/protected/profile/prof
 import { HomeComponent } from './job-seeker/components/protected/home/home.component';
 import { JobApplicationsComponent } from './job-seeker/components/protected/job-applications/job-applications.component';
 import { LoginCompletedComponent } from './job-seeker/components/login-completed/login-completed.component';
+import { isAuthGuard } from './job-seeker/interceptors/oauth.guard';
 
 const routes: Routes = [
   {path: '', pathMatch: 'full', redirectTo: 'jobSeeker/login',},
@@ -15,7 +16,9 @@ const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'login-completed', component: LoginCompletedComponent },
-    { path: '', component: HeaderComponent, children: [
+    { path: '', component: HeaderComponent,
+      canActivate: [isAuthGuard],
+      children: [
       { path: 'profile', component: ProfileComponent },
       { path: 'home', component: HomeComponent },
       { path: 'my-applications', component: JobApplicationsComponent }

@@ -1,0 +1,11 @@
+{
+    "production": true,
+    "apiUrl": "http://172.190.104.34:5005/api",
+    "loginAPIUrl": "http://172.190.104.34:5003/login",
+    "oAuth": {
+      "issuer": "https://localhost:7016",
+      "redirectUri": "https://localhost:4002/login-completed",
+      "postLogoutRedirectUri": "https://localhost:4002/logout-completed"
+    }
+  }
+  

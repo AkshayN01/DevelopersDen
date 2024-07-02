@@ -8,6 +8,14 @@
     <span>
       <button mat-button routerLink="/">Developers Den</button>
     </span>
+    <button mat-button routerLink="/jobSeeker/home">
+      <mat-icon>home</mat-icon>
+      Home
+    </button>
+    <button mat-button routerLink="/jobSeeker/my-applications">
+      <mat-icon>work</mat-icon>
+      My Applications
+    </button>
     <span class="example-spacer"></span>
     <div fxLayout="row" fxShow="false" fxShow.gt-sm>
       <button mat-button routerLink="/login" *ngIf="!isAuthenticated">
