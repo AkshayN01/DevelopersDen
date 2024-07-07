@@ -1,11 +1,12 @@
 import { AfterViewInit, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
 import { AuthService } from '../../services/auth/auth.service';
-import { last } from 'rxjs';
+import { filter, last, Subscription } from 'rxjs';
 import { LoginRequest } from '../../models/request/loginRequest';
 import { SessionService } from '../../services/session/session.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ import { SessionService } from '../../services/session/session.service';
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public loginValid = true;
   public loginRequest: LoginRequest = { email : "", password: "" };
-
+  private routerSubscription!: Subscription;
   // private _destroySub$ = new Subject<void>();
   // private readonly returnUrl: string;
 
@@ -33,6 +34,13 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public ngOnInit(): void {
     this.initialiseGoogleOneTap();
+    // Subscribe to router events to re-initialize the Google button on navigation
+    this.routerSubscription = this._router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        // Initialize Google button on navigation end
+        this.initialiseGoogleOneTap();
+      });
   }
 
   initialiseGoogleOneTap(){
@@ -43,7 +51,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       // @ts-ignore
       google.accounts.id.initialize({
         // Ref: https://developers.google.com/identity/gsi/web/reference/js-reference#IdConfiguration
-        client_id: '474665561501-hp2bh6050sk9tclehp6on13vt6mv2rmk.apps.googleusercontent.com',
+        client_id: environment.jobSeeker.googleClientId,
         callback: this.handleCredentialResponse.bind(this), // Whatever function you want to trigger...
         auto_select: false,
         cancel_on_tap_outside: true
@@ -72,6 +80,9 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public ngOnDestroy(): void {
     // this._destroySub$.next();
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   public onSubmit(): void {

@@ -173,7 +173,12 @@ namespace DevelopersDen.Blanket.JobSeeker
             }
             catch (Exception ex)
             {
-                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, ex.Message);
+                message = ex.Message;
+                if (Library.Generic.Utility.IsUniqueConstraintViolation(ex))
+                {
+                    message = "Email id already exists in the database";
+                }
+                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, message);
             }
 
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);

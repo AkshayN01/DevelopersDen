@@ -27,8 +27,8 @@
       </div>
   
       <h3>Key Skills</h3>
-      <div *ngFor="let skill of initialData.keySkills">
-        <mat-chip>{{skill}}</mat-chip>
+      <div>
+        <mat-chip *ngFor="let skill of initialData.keySkills">{{skill}}</mat-chip>
       </div>
       <a style="margin-top: 2em;" [href]="getResumeUrl()" download="{{initialData.resume.fileName}}" class="mat-raised-button">Download Resume</a><br>
       <button style="margin-top: 2em;" mat-raised-button color="primary" (click)="enableEditing()">Edit Profile</button>

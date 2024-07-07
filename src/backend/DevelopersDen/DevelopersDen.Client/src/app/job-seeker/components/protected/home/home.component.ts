@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { JobSearchRequest, JobType } from '../../../models/request/jobSearchrequest';
 import { PageEvent } from '@angular/material/paginator';
 import { Job, JobDTO } from '../../../models/response/job';
+import { GenericService } from '../../../../shared/services/generic/generic.service';
 
 export interface KeySkills {
   name: string;
@@ -34,7 +35,7 @@ export class HomeComponent implements OnInit {
   readonly skills = signal<KeySkills[]>([]);
   readonly announcer = inject(LiveAnnouncer);
 
-  constructor(private fb: FormBuilder, private jobService: JobService)
+  constructor(private fb: FormBuilder, private jobService: JobService, private genericService: GenericService)
   {
   }
   ngOnInit(): void {
@@ -122,6 +123,7 @@ export class HomeComponent implements OnInit {
   applyJob(){
     this.jobService.addjobApplication(this.selectedJob.jobId, 1).subscribe(res =>{
       if(res == 'true' || res == true){
+        this.genericService.openSnackBar('Successfully applied for this job');
         var index = this.jobs.jobs.findIndex(x => x.jobId == this.selectedJob.jobId);
         this.jobs.jobs[index].hasApplied = true;
       }

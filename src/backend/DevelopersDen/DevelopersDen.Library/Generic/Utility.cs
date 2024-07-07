@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -20,6 +22,16 @@ namespace DevelopersDen.Library.Generic
             }
 
             return Expression.Lambda<Func<T, bool>>(body, param);
+        }
+
+        public static bool IsUniqueConstraintViolation(Exception ex)
+        {
+            if (ex.InnerException is PostgresException postgresException)
+            {
+                // PostgreSQL error code for unique constraint violation is 23505
+                return postgresException.SqlState == "23505";
+            }
+            return false;
         }
     }
 }

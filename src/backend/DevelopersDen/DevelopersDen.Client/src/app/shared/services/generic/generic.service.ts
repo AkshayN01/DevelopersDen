@@ -1,5 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { throwError } from 'rxjs';
 
 @Injectable({
@@ -7,7 +8,7 @@ import { throwError } from 'rxjs';
 })
 export class GenericService {
 
-  constructor() { }
+  constructor(private matSnackBar: MatSnackBar) { }
   convertDate(dateString: string): string {
     if(dateString == null || dateString == undefined || dateString == '')
       return '';
@@ -51,5 +52,9 @@ export class GenericService {
       console.error('Server-side error:', error.status, error.error);
     }
     return throwError(() => error);
+  }
+  
+  openSnackBar(message: string) {
+    this.matSnackBar.open(message, 'Dismiss');
   }
 }

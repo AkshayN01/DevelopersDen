@@ -22,6 +22,7 @@ export class ProfileComponent {
   initialData!: JobSeekerProfileDTO;  // This will hold the data to display and edit
   display: FormControl = new FormControl("", Validators.required);
   isEditing: boolean = false;
+  isFirstVisit: boolean = false;
 
 
   //mat-chip
@@ -69,16 +70,30 @@ export class ProfileComponent {
     this.hasProfileData = false;
     this.profileService.getProfile().subscribe(data => {
       this.initialData = data;
+      console.log(data);
       this.hasProfileData = true;
       if(data != null){
         this.initializeForm(this.initialData);
       }
+      else{
+        this.isEditing = true;
+        this.isFirstVisit = true;
+      }
+    }, (err) => {
+      this.hasProfileData = true;
+        this.isEditing = true;
+        this.isFirstVisit = true;
     });
   }
 
   initializeForm(data: JobSeekerProfileDTO): void {
+    console.log(data.keySkills)
     if(data.workExperience.length != 0){
     data.workExperience.forEach((work: any) => {
+      if(work.isCurrent == "0")
+        work.isCurrent == false;
+      if(work.isCurrent == "1")
+        work.isCurrent = true;
       const workGroup = this.fb.group({
         companyName: [work.companyName, Validators.required],
         designation: [work.designation, Validators.required],
@@ -91,11 +106,11 @@ export class ProfileComponent {
     });
   }
     this.profileForm.patchValue({
-      keySkills: data.keySkills,
+      // keySkills: this.fb.array(data.keySkills),
       summary: data.summary,
       resume: this.getBlob()
     });
-
+    this.profileForm.setControl('keySkills', this.fb.array(data.keySkills));
     data.keySkills.forEach(val => {
       this.skills.update(skills => [...skills, {name: val}]);
     });
@@ -263,7 +278,7 @@ export class ProfileComponent {
 
   onSubmit(): void {
     if (this.profileForm.valid) {
-      console.log(this.profileForm.value);
+      console.log(this.profileForm.get('keySkills')?.value);
       // Handle form submission logic, such as sending data to the server
       this.constructRequestData();
       // this.profileService.saveProfile(requestBody).subscribe(data => {
@@ -283,7 +298,11 @@ export class ProfileComponent {
     formData.append('summary', this.profileForm.get('summary')?.value)
 
     //key skills
-    formData.append('keySkills', this.profileForm.get('keySkills')?.value)
+    var keySkillsData = this.profileForm.get('keySkills')?.value;
+
+    keySkillsData.forEach((item:any, index:number) => {
+      formData.append(`keySkills[${index}]`, item);
+    })
 
     //work history
     var workHistoryData = this.profileForm.get('workHistory')?.value;
@@ -294,21 +313,24 @@ export class ProfileComponent {
       formData.append(`workExperience[${index}].workDescription`, item.workDescription);
       formData.append(`workExperience[${index}].startDate`, this.genericService.convertDate(item.startDate));
       formData.append(`workExperience[${index}].endDate`, this.genericService.convertDate(item.endDate));
-      formData.append(`workExperience[${index}].isCurrent`, item.isCurrent);
+      formData.append(`workExperience[${index}].isCurrent`, item.isCurrent == 0 ? false : item.isCurrent == 1 ? true : item.isCurrent);
     });
     console.log(this.isEditing);
-    if(this.isEditing){
+    if(this.isEditing && !this.isFirstVisit){
       this.http.put(environment.jobSeeker.apiUrl+'update-profile', formData).subscribe(response => {
-        if(response == 'true'){
+        // if(response == true){
+          this.genericService.openSnackBar('Successfully updated profile');
           this.getInitialData();
           this.isEditing = false;
-        }
+        // }
       }, error => {
+        this.genericService.openSnackBar('Upload Error');
         console.error('Upload error:', error);
       });
     }
     else{
       this.http.post(environment.jobSeeker.apiUrl+'add-profile', formData).subscribe(response => {
+        this.genericService.openSnackBar('Successfully added profile');
         console.log('Upload successful:', response);
       }, error => {
         console.error('Upload error:', error);

@@ -5,6 +5,7 @@ import { FormBuilder } from '@angular/forms';
 import { JobService } from '../../../services/job/job.service';
 import { ApplicationStatuses, JobApplication, JobApplicationDTO } from '../../../models/response/jobApplication';
 import { JobType } from '../../../models/request/jobSearchrequest';
+import { GenericService } from '../../../../shared/services/generic/generic.service';
 
 @Component({
   selector: 'app-job-applications',
@@ -21,7 +22,7 @@ export class JobApplicationsComponent {
   isSelected: boolean = false;
   selectedJob!: JobApplication;
 
-  constructor(private fb: FormBuilder, private jobService: JobService)
+  constructor(private fb: FormBuilder, private jobService: JobService, private genericService: GenericService)
   {
   }
   ngOnInit(): void {
@@ -65,6 +66,7 @@ export class JobApplicationsComponent {
   applyJob(){
     this.jobService.editjobApplication(this.selectedJob.applicationId, 2).subscribe(res =>{
       if(res == 'true' || res == true){
+        this.genericService.openSnackBar('Successfully cancelled application');
         var index = this.jobs.applications.findIndex(x => x.applicationId == this.selectedJob.applicationId);
         this.jobs.applications[index].hasCanceled = true;
       }

@@ -22,6 +22,7 @@ export class ApiService {
         if (response.meta.retVal === 1) {
           return response.data;
         } else {
+          this.openSnackBar(response.meta.message);
           throw new Error(response.meta.message || 'Unexpected response');
         }
       })
@@ -34,6 +35,7 @@ export class ApiService {
         if (response.meta.retVal === 1) {
           return response.data;
         } else {
+          this.openSnackBar(response.meta.message);
           throw new Error(response.meta.message || 'Unexpected response');
         }
       })
@@ -46,6 +48,7 @@ export class ApiService {
         if (response.meta.retVal === 1) {
           return response.data;
         } else {
+          this.openSnackBar(response.meta.message);
           throw new Error(response.meta.message || 'Unexpected response');
         }
       })
@@ -73,5 +76,9 @@ export class ApiService {
       console.error('Server-side error:', error.status, error.error);
     }
     return throwError(() => error);
+  }
+
+  private openSnackBar(message: string) {
+    this.matSnackBar.open(message, 'Dismiss');
   }
 }
