@@ -331,8 +331,11 @@ export class ProfileComponent {
     else{
       this.http.post(environment.jobSeeker.apiUrl+'add-profile', formData).subscribe(response => {
         this.genericService.openSnackBar('Successfully added profile');
+        this.getInitialData();
+        this.isEditing = false;
         console.log('Upload successful:', response);
       }, error => {
+        this.genericService.openSnackBar('Upload Error');
         console.error('Upload error:', error);
       });
     }

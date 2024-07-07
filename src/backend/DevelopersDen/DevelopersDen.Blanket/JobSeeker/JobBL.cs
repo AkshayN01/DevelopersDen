@@ -323,8 +323,8 @@ namespace DevelopersDen.Blanket.JobSeeker
                     _mapper.Map(jobApplications, jobApplicationsDTO);
                     response.Applications = jobApplicationsDTO;
                     data = response;
-                    retVal = 1;
                 }
+                retVal = 1;
 
             }
             catch (Exception ex)

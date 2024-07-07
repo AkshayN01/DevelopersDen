@@ -2,7 +2,7 @@
     <mat-spinner></mat-spinner>
 </div>
 <section *ngIf="hasDataLoaded" class="content-container">
-    <div class="column list-column" *ngIf="jobs != undefined">
+    <div class="column list-column" *ngIf="jobs != null">
         <div class="list-content">
             <mat-card [ngClass]="{'cancelled-application': app.applicationStatusId == 2}" matRipple style="margin-bottom: 1em;max-width: 55em;" *ngFor="let app of jobs.applications" (click)="viewInfo(app)">
                 <mat-card-header>
