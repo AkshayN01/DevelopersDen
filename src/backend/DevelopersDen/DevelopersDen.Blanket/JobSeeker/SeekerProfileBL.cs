@@ -116,7 +116,8 @@ namespace DevelopersDen.Blanket.JobSeeker
                     var registerResponse = await Register(resgisterRequest);
                     if(registerResponse != null && registerResponse.Data != null) 
                     {
-                        jobSeeker = System.Text.Json.JsonSerializer.Deserialize<Contracts.DBModels.JobSeeker.JobSeeker>(System.Text.Json.JsonSerializer.Serialize(registerResponse.Data));
+
+                        jobSeeker = await _unitOfWork._JobSeekerRepository.Login(payload.Email);
                     }
                     else
                     {

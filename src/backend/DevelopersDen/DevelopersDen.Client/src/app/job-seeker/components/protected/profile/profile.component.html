@@ -72,7 +72,7 @@
 
     <div formArrayName="workHistory">
       <h2>Work History</h2>
-      <button mat-raised-button color="primary" (click)="addWorkHistory()">+ Add another work history</button><br>
+      <button mat-raised-button color="primary" style="margin: 1em;" (click)="addWorkHistory()">+ Add another work history</button><br>
     
       <div *ngIf="workHistory.controls.length > 0">
         <div *ngFor="let history of workHistory.controls; let i=index">
