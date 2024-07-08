@@ -1,6 +1,6 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal} from '@angular/core';
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -27,15 +27,16 @@ export class HomeComponent implements OnInit {
   pageNumber = 1;
   jobs!: JobDTO;
   jobTypes!: JobType[];
-  hasDataLoaded: boolean = false;
+  showSpinner: boolean = true;
   isSelected: boolean = false;
   selectedJob!: Job;
+  totalCount: Number = 0;
   readonly addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   readonly skills = signal<KeySkills[]>([]);
   readonly announcer = inject(LiveAnnouncer);
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private genericService: GenericService)
+  constructor(private fb: FormBuilder, private jobService: JobService, private genericService: GenericService, private cdr: ChangeDetectorRef)
   {
   }
   ngOnInit(): void {
@@ -68,6 +69,7 @@ export class HomeComponent implements OnInit {
     this.pageSize = event.pageSize;
     this.pageNumber = event.pageIndex + 1;
     this.searchForJobs();
+    this.cdr.detectChanges();
   }
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
@@ -130,7 +132,7 @@ export class HomeComponent implements OnInit {
     })
   }
   searchForJobs(){
-    this.hasDataLoaded = false;
+    this.showSpinner = true;
     const apiBody: JobSearchRequest = {
       companyName: this.companyName,
       keySkills: this.getValues(),
@@ -142,11 +144,10 @@ export class HomeComponent implements OnInit {
     console.log(JSON.stringify(apiBody));
 
     this.jobService.getjobs(apiBody, this.pageNumber, this.pageSize).subscribe(res => {
+      this.showSpinner = false;
       this.jobs = res;
-      this.hasDataLoaded = true;
+      this.totalCount = res.totalCount;
+      this.cdr.detectChanges();
     });
-  }
-
-  constructAPIRequest(){
   }
 }
